@@ -31,6 +31,7 @@ class BoardData:
     height: int
     width: int
     board_data: list[list[list[TileType]]]
+    initial_agent_pos: tuple[int, int]
 
 
 def read_board_data(filename):
@@ -40,12 +41,16 @@ def read_board_data(filename):
         lines = lines[1:]
         width = len(lines[0].split("."))
         board_data = [[[] for _ in range(width)] for _ in range(height)]
+        agent_pos = None
+        no_wumpus = True
+
         for y, line in enumerate(lines):
             for x, tiles in enumerate(line.split(".")):
                 tiles = tiles.upper()
                 for tile in tiles:
                     if tile == "W":
                         board_data[y][x].append(TileType.WUMPUS)
+                        no_wumpus = False
                     elif tile == "P":
                         board_data[y][x].append(TileType.PIT)
                     elif tile == "G":
@@ -54,4 +59,15 @@ def read_board_data(filename):
                         board_data[y][x].append(TileType.BREEZE)
                     elif tile == "S":
                         board_data[y][x].append(TileType.STENCH)
-        return BoardData(height, width, board_data)
+                    elif tile == "A":
+                        agent_pos = (y, x)
+
+        if agent_pos is None:
+            raise ValueError("No agent position found in map file")
+        if no_wumpus:
+            raise ValueError("No wumpus found in map file")
+        if height > 10 or width > 10:
+            raise ValueError("Map too big")
+
+        agent_pos = (agent_pos[0], agent_pos[1])
+        return BoardData(height, width, board_data, agent_pos)

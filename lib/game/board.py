@@ -1,5 +1,6 @@
+from dataclasses import dataclass
 import enum
-from typing import List
+from typing import List, Tuple
 import pygame
 import copy
 
@@ -11,6 +12,52 @@ WUMPUS_POINTS = -10000
 ARROW_POINTS = -100
 CLIMB_OUT_POINTS = 10
 MOVE_POINTS = -10
+
+
+class Percepts:
+    def __init__(self) -> None:
+        self.percepts = [False, False, False, False, False]
+
+    def __getitem__(self, name: str) -> bool:
+        if name == "stench":
+            return self.percepts[0]
+        elif name == "breeze":
+            return self.percepts[1]
+        elif name == "glitter":
+            return self.percepts[2]
+        elif name == "bump":
+            return self.percepts[3]
+        elif name == "scream":
+            return self.percepts[4]
+        raise Exception(f"Unknown percept: {name}")
+
+    def __setitem__(self, name: str, value: bool):
+        if name == "stench":
+            self.percepts[0] = value
+        elif name == "breeze":
+            self.percepts[1] = value
+        elif name == "glitter":
+            self.percepts[2] = value
+        elif name == "bump":
+            self.percepts[3] = value
+        elif name == "scream":
+            self.percepts[4] = value
+        else:
+            raise Exception(f"Unknown percept: {name}")
+
+    def __repr__(self) -> str:
+        names = ["none"] * 5
+        if self.percepts[0]:
+            names[0] = "stench"
+        if self.percepts[1]:
+            names[1] = "breeze"
+        if self.percepts[2]:
+            names[2] = "glitter"
+        if self.percepts[3]:
+            names[3] = "bump"
+        if self.percepts[4]:
+            names[4] = "scream"
+        return f"Percepts({names})"
 
 
 class Direction(enum.Enum):
@@ -41,31 +88,17 @@ class Board:
             for _ in range(self.board_data.height)
         ]
         # y, x
-        self.agent = (board_data.height - 1, 0)
+        self.agent = board_data.initial_agent_pos
         self.agent_direction = Direction.RIGHT
         self.points = 0
         self.game_over = False
+        self.current_percepts = Percepts()
+        self._update_percepts()
         self.revealed[self.agent[0]][self.agent[1]] = True
-        self.revealed[self.agent[0] - 1][self.agent[1]] = True
-        self.revealed[self.agent[0]][self.agent[1] + 1] = True
 
     def _current_agent_tiles(self) -> List[TileType]:
         y, x = self.agent
         return self.board_data.board_data[y][x]
-
-    def revealed_tiles(self) -> List[List[TileType] | None]:
-        """
-        Return the tiles that the agent can perceive (percepts).
-        The order is [up, down, left, right].
-        - None if the agent cannot perceive that tile (out of bounds)
-        - [] if the agent can perceive that tile but there is nothing there
-        """
-        board_data = copy.deepcopy(self.board_data.board_data)
-        for y in range(self.board_data.height):
-            for x in range(self.board_data.width):
-                if not self.revealed[y][x]:
-                    board_data[y][x] = None
-        return board_data
 
     def current_agent_position(self) -> tuple[int, int]:
         return self.agent
@@ -73,7 +106,19 @@ class Board:
     def change_agent_direction(self, direction: Direction):
         self.agent_direction = direction
 
-    def act(self, action: Action) -> List[List[TileType] | None]:
+    def _update_percepts(self):
+        tiles = self._current_agent_tiles()
+        percepts = Percepts()
+        for tile in tiles:
+            if tile == TileType.GOLD:
+                percepts["glitter"] = True
+            elif tile == TileType.BREEZE:
+                percepts["breeze"] = True
+            elif tile == TileType.STENCH:
+                percepts["stench"] = True
+        self.current_percepts = percepts
+
+    def act(self, action: Action) -> Percepts:
         """
         Move the agent in the given direction.
         Return the tiles that the agent can perceive (percepts).
@@ -95,53 +140,44 @@ class Board:
                 x += 1
             if 0 <= y < self.board_data.height and 0 <= x < self.board_data.width:
                 self.agent = (y, x)
-                percepts: List[List[TileType] | None] = [None, None, None, None]
-                if y - 1 >= 0:
-                    percepts[0] = self.board_data.board_data[y - 1][x].copy()
-                    if TileType.WUMPUS not in percepts[0]:
-                        self.revealed[y - 1][x] = True
-                if y + 1 < self.board_data.height:
-                    percepts[1] = self.board_data.board_data[y + 1][x].copy()
-                    if TileType.WUMPUS not in percepts[1]:
-                        self.revealed[y + 1][x] = True
-                if x - 1 >= 0:
-                    percepts[2] = self.board_data.board_data[y][x - 1].copy()
-                    if TileType.WUMPUS not in percepts[2]:
-                        self.revealed[y][x - 1] = True
-                if x + 1 < self.board_data.width:
-                    percepts[3] = self.board_data.board_data[y][x + 1].copy()
-                    if TileType.WUMPUS not in percepts[3]:
-                        self.revealed[y][x + 1] = True
                 self.revealed[y][x] = True
-                for percept in percepts:
-                    if percept is not None:
-                        if TileType.WUMPUS in percept:
-                            percept.remove(TileType.WUMPUS)
-                        if TileType.PIT in percept:
-                            percept.remove(TileType.PIT)
-                        if TileType.GOLD in percept:
-                            percept.remove(TileType.GOLD)
                 self.points += MOVE_POINTS
                 tiles = self._current_agent_tiles()
-                if TileType.GOLD in tiles:
-                    self.points += GOLD_POINTS
-                    self.board_data.board_data[y][x].remove(TileType.GOLD)
-                if TileType.PIT in tiles or TileType.WUMPUS in tiles:
-                    self.points += PIT_POINTS
-                    self.game_over = True
-                print(f"Points: {self.points}")
-                print(f"Percepts: {percepts}")
+                percepts = Percepts()
+                for tile in tiles:
+                    if tile == TileType.GOLD:
+                        self.points += GOLD_POINTS
+                        print(f"Points: {self.points}")
+                        percepts["glitter"] = True
+                        self.board_data.board_data[y][x].remove(TileType.GOLD)
+                    elif tile == TileType.PIT:
+                        self.points += PIT_POINTS
+                        self.game_over = True
+                        print(f"Points: {self.points}")
+                    elif tile == TileType.WUMPUS:
+                        self.points += WUMPUS_POINTS
+                        self.game_over = True
+                        print(f"Points: {self.points}")
+                    elif tile == TileType.BREEZE:
+                        percepts["breeze"] = True
+                    elif tile == TileType.STENCH:
+                        percepts["stench"] = True
+                self.current_percepts = percepts
                 return percepts
-            return []
         elif action == Action.SHOOT:
-            self._shoot()
+            percepts = self.current_percepts
+            hit = self._shoot()
+            if hit:
+                percepts["scream"] = True
+            return percepts
+
         elif action == Action.CLIMB:
             if self.agent == (self.board_data.height - 1, 0):
                 self.points += CLIMB_OUT_POINTS
                 self.game_over = True
                 print(f"Points: {self.points}")
-                return []
-            raise Exception("Cannot climb out: not at (0, 0)")
+                return self.current_percepts
+            raise Exception("Cannot climb out: not at (1, 1)")
 
     def draw(self, surface: pygame.Surface):
         self.board_surface.fill((0, 0, 0))
@@ -249,7 +285,7 @@ class Board:
             color = (255, 255, 255)
             text = "BSG"
         else:
-            color = (0, 0, 0)
+            color = (100, 100, 100)
             text = ""
         font = pygame.font.SysFont("Mono", 20)
         pygame.draw.rect(
