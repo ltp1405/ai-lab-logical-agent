@@ -2,11 +2,19 @@ import pygame
 from lib.game.board import Action, Board, Direction
 from lib.game.board_data import BoardData, read_board_data
 
+TILE_SIZE = 128
+
 if __name__ == "__main__":
     pygame.init()
     board_data = read_board_data("tests/map2.txt")
-    board = Board(board_data, 0, 100, 128)
-    screen = pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN)
+    screen = pygame.display.set_mode(flags=pygame.FULLSCREEN)
+    s_width, s_height = screen.get_size()
+    middle = s_width // 2, s_height // 2
+    board_x, board_y = (
+        middle[0] - TILE_SIZE * board_data.width // 2,
+        middle[1] - TILE_SIZE * board_data.height // 2,
+    )
+    board = Board(board_data, board_x, board_y, TILE_SIZE)
     clock = pygame.time.Clock()
     running = True
     font = pygame.font.SysFont("Arial", 32)
