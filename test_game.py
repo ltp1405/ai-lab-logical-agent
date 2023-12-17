@@ -2,7 +2,7 @@ import pygame
 from lib.game.board import Action, Board, Direction
 from lib.game.board_data import BoardData, read_board_data
 
-TILE_SIZE = 128
+TILE_SIZE = 64
 
 if __name__ == "__main__":
     pygame.init()
@@ -11,8 +11,8 @@ if __name__ == "__main__":
     s_width, s_height = screen.get_size()
     middle = s_width // 2, s_height // 2
     board_x, board_y = (
-        middle[0] - TILE_SIZE * board_data.width // 2,
-        middle[1] - TILE_SIZE * board_data.height // 2,
+        middle[0] - board_data.initial_agent_pos[0] * TILE_SIZE,
+        middle[1] - board_data.initial_agent_pos[1] * TILE_SIZE,
     )
     board = Board(board_data, board_x, board_y, TILE_SIZE)
     clock = pygame.time.Clock()
@@ -60,9 +60,9 @@ if __name__ == "__main__":
         board.update(dt)
         if board.game_over:
             running = False
-        screen.fill((255, 255, 255))
-        text_rect = font.render(f"{text}", True, (0, 0, 0))
-        screen.blit(text_rect, (0, 0))
+        screen.fill((0, 0, 0))
         board.draw(screen)
+        text_rect = font.render(f"{text}", True, (255, 255, 255))
+        screen.blit(text_rect, (0, 0))
         pygame.display.update()
     print(board_data)
