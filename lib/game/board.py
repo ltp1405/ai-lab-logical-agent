@@ -1,8 +1,10 @@
 from dataclasses import dataclass
+from ..percepts import Percepts
 import enum
 from typing import List, Tuple
 import pygame
 import copy
+import random
 
 from lib.game.board_data import BoardData, TileType
 
@@ -12,52 +14,6 @@ WUMPUS_POINTS = -10000
 ARROW_POINTS = -100
 CLIMB_OUT_POINTS = 10
 MOVE_POINTS = -10
-
-
-class Percepts:
-    def __init__(self) -> None:
-        self.percepts = [False, False, False, False, False]
-
-    def __getitem__(self, name: str) -> bool:
-        if name == "stench":
-            return self.percepts[0]
-        elif name == "breeze":
-            return self.percepts[1]
-        elif name == "glitter":
-            return self.percepts[2]
-        elif name == "bump":
-            return self.percepts[3]
-        elif name == "scream":
-            return self.percepts[4]
-        raise Exception(f"Unknown percept: {name}")
-
-    def __setitem__(self, name: str, value: bool):
-        if name == "stench":
-            self.percepts[0] = value
-        elif name == "breeze":
-            self.percepts[1] = value
-        elif name == "glitter":
-            self.percepts[2] = value
-        elif name == "bump":
-            self.percepts[3] = value
-        elif name == "scream":
-            self.percepts[4] = value
-        else:
-            raise Exception(f"Unknown percept: {name}")
-
-    def __repr__(self) -> str:
-        names = ["none"] * 5
-        if self.percepts[0]:
-            names[0] = "stench"
-        if self.percepts[1]:
-            names[1] = "breeze"
-        if self.percepts[2]:
-            names[2] = "glitter"
-        if self.percepts[3]:
-            names[3] = "bump"
-        if self.percepts[4]:
-            names[4] = "scream"
-        return f"Percepts({names})"
 
 
 class Direction(enum.Enum):
@@ -164,6 +120,10 @@ class Board:
                         percepts["stench"] = True
                 self.current_percepts = percepts
                 return percepts
+            else:
+                percepts = self.current_percepts
+                percepts["bump"] = True
+                return percepts
         elif action == Action.SHOOT:
             percepts = self.current_percepts
             hit = self._shoot()
@@ -183,8 +143,8 @@ class Board:
         self.board_surface.fill((0, 0, 0))
         self._draw_tiles()
         self._draw_agent()
-        self._draw_grid()
-        self._draw_border()
+        # self._draw_grid()
+        # self._draw_border()
         surface.blit(self.board_surface, (self.x, self.y))
 
     def _draw_tiles(self):
@@ -223,7 +183,9 @@ class Board:
                     if self.board_data.board_data[y][self.agent[1]] == [
                         TileType.WUMPUS
                     ]:
-                        self.board_data.board_data[y][self.agent[1]] = []
+                        self.board_data.board_data[y][self.agent[1]].remove(
+                            TileType.WUMPUS
+                        )
                         self._remove_stench_around(self.agent[1], y)
                         return True
             case Direction.DOWN:
@@ -231,7 +193,9 @@ class Board:
                     if self.board_data.board_data[y][self.agent[1]] == [
                         TileType.WUMPUS
                     ]:
-                        self.board_data.board_data[y][self.agent[1]] = []
+                        self.board_data.board_data[y][self.agent[1]].remove(
+                            TileType.WUMPUS
+                        )
                         self._remove_stench_around(self.agent[1], y)
                         return True
             case Direction.LEFT:
@@ -239,7 +203,9 @@ class Board:
                     if self.board_data.board_data[self.agent[0]][x] == [
                         TileType.WUMPUS
                     ]:
-                        self.board_data.board_data[self.agent[0]][x] = []
+                        self.board_data.board_data[self.agent[0]][x].remove(
+                            TileType.WUMPUS
+                        )
                         self._remove_stench_around(x, self.agent[0])
                         return True
             case Direction.RIGHT:
@@ -247,7 +213,9 @@ class Board:
                     if self.board_data.board_data[self.agent[0]][x] == [
                         TileType.WUMPUS
                     ]:
-                        self.board_data.board_data[self.agent[0]][x] = []
+                        self.board_data.board_data[self.agent[0]][x].remove(
+                            TileType.WUMPUS
+                        )
                         self._remove_stench_around(x, self.agent[0])
                         return True
         return False

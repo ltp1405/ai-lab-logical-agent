@@ -30,7 +30,7 @@ class TileType(Enum):
 class BoardData:
     height: int
     width: int
-    board_data: list[list[list[TileType]]]
+    board_data: list[list[set[TileType]]]
     initial_agent_pos: tuple[int, int]
 
 
@@ -40,7 +40,7 @@ def read_board_data(filename):
         height = int(lines[0])
         lines = lines[1:]
         width = len(lines[0].split("."))
-        board_data = [[[] for _ in range(width)] for _ in range(height)]
+        board_data = [[set() for _ in range(width)] for _ in range(height)]
         agent_pos = None
         no_wumpus = True
 
@@ -49,16 +49,12 @@ def read_board_data(filename):
                 tiles = tiles.upper()
                 for tile in tiles:
                     if tile == "W":
-                        board_data[y][x].append(TileType.WUMPUS)
+                        board_data[y][x].add(TileType.WUMPUS)
                         no_wumpus = False
                     elif tile == "P":
-                        board_data[y][x].append(TileType.PIT)
+                        board_data[y][x].add(TileType.PIT)
                     elif tile == "G":
-                        board_data[y][x].append(TileType.GOLD)
-                    elif tile == "B":
-                        board_data[y][x].append(TileType.BREEZE)
-                    elif tile == "S":
-                        board_data[y][x].append(TileType.STENCH)
+                        board_data[y][x].add(TileType.GOLD)
                     elif tile == "A":
                         agent_pos = (y, x)
 
@@ -70,4 +66,31 @@ def read_board_data(filename):
             raise ValueError("Map too big")
 
         agent_pos = (agent_pos[0], agent_pos[1])
+        put_enviroment(board_data)
+        print(board_data)
         return BoardData(height, width, board_data, agent_pos)
+
+
+def put_enviroment(board_data):
+    height = len(board_data)
+    width = len(board_data[0])
+    for y in range(len(board_data)):
+        for x in range(len(board_data[y])):
+            if TileType.WUMPUS in board_data[y][x]:
+                if y > 0:
+                    board_data[y - 1][x].add(TileType.STENCH)
+                if y < height - 1:
+                    board_data[y + 1][x].add(TileType.STENCH)
+                if x > 0:
+                    board_data[y][x - 1].add(TileType.STENCH)
+                if x < width - 1:
+                    board_data[y][x + 1].add(TileType.STENCH)
+            if TileType.PIT in board_data[y][x]:
+                if y > 0:
+                    board_data[y - 1][x].add(TileType.BREEZE)
+                if y < height - 1:
+                    board_data[y + 1][x].add(TileType.BREEZE)
+                if x > 0:
+                    board_data[y][x - 1].add(TileType.BREEZE)
+                if x < width - 1:
+                    board_data[y][x + 1].add(TileType.BREEZE)
