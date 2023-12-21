@@ -27,6 +27,14 @@ class WorldView:
             match cell:
                 case ("is_stench", CellValue.TRUE):
                     for i in range(4):
+                        not_wumpus_cnt = 0
+                        if (
+                            self.cells[x + self.kx[i] + 11][
+                                y + self.ky[i] + 11
+                            ].is_wumpus
+                            == CellValue.FALSE
+                        ):
+                            not_wumpus_cnt += 1
                         if (
                             self.cells[x + self.kx[i] + 11][
                                 y + self.ky[i] + 11
@@ -36,6 +44,17 @@ class WorldView:
                             self.cells[x + self.kx[i] + 11][
                                 y + self.ky[i] + 11
                             ].is_wumpus = CellValue.MAYBE
+                    if not_wumpus_cnt == 3:
+                        for i in range(4):
+                            if (
+                                self.cells[x + self.kx[i] + 11][
+                                    y + self.ky[i] + 11
+                                ].is_wumpus
+                                == CellValue.MAYBE
+                            ):
+                                self.cells[x + self.kx[i] + 11][
+                                    y + self.ky[i] + 11
+                                ].is_wumpus = CellValue.TRUE
                 case ("is_stench", CellValue.FALSE):
                     for i in range(4):
                         if (
