@@ -86,7 +86,7 @@ class KnowledgeBase:
                     case Direction.LEFT:
                         self.left = x
                         set_bound_res = self.world.set_bound(Direction.LEFT, x)
-                res.update(set_bound_res)
+                # res.update(set_bound_res)
         if action == None:
             pass
         elif percept["scream"] or action[0] == Action.SHOOT:
