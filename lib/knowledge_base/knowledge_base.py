@@ -1,6 +1,6 @@
 from copy import Error
 from typing import Any, Dict, List, Tuple
-from lib.game.board import Action, Direction
+from lib.game.board_model import Action, Direction
 from lib.knowledge_base.cell import CellValue
 from lib.knowledge_base.world_view import WorldView
 from lib.percepts import Percepts

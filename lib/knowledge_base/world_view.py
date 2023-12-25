@@ -5,11 +5,11 @@ from lib.knowledge_base.cell import Cell, CellValue
 
 
 class WorldView:
-    cells: List[List[Cell]]
     kx = [1, -1, 0, 0]
     ky = [0, 0, 1, -1]
 
     def __init__(self) -> None:
+        self.cells: List[List[Cell]] = []
         for i in range(22):
             self.cells.append([])
             for _ in range(22):
