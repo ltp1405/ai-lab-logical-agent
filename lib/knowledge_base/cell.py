@@ -66,8 +66,8 @@ class Cell:
     @is_oob.setter
     def is_oob(self, value: bool):
         if value:
-            self.is_wumpus = CellValue.FALSE
-            self.is_pit = CellValue.FALSE
+            self._is_wumpus = CellValue.FALSE
+            self._is_pit = CellValue.FALSE
             self.is_stench = CellValue.FALSE
             self.is_breeze = CellValue.FALSE
             self.is_gold = CellValue.FALSE

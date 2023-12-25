@@ -67,25 +67,26 @@ class KnowledgeBase:
         action: Tuple[Action, Direction] | None = None,
     ) -> Dict[Tuple[int, int], Any]:
         res: Dict[Tuple[int, int], Any] = {}
+        print(f"tell: ({x}, {y})")
         self.world[(x, y)].is_safe = True
         if percept["bump"]:
             if action == None:
                 raise Error("No action provided for bump percept")
             else:
-                set_bound_res: Dict[Tuple[int, int], Any]
+                # set_bound_res: Dict[Tuple[int, int], Any]
                 match action[1]:
                     case Direction.UP:
                         self.top = y
-                        set_bound_res = self.world.set_bound(Direction.UP, y)
+                        self.world.set_bound(Direction.UP, y)
                     case Direction.RIGHT:
                         self.right = x
-                        set_bound_res = self.world.set_bound(Direction.RIGHT, x)
+                        self.world.set_bound(Direction.RIGHT, x)
                     case Direction.DOWN:
                         self.bottom = y
-                        set_bound_res = self.world.set_bound(Direction.DOWN, y)
+                        self.world.set_bound(Direction.DOWN, y)
                     case Direction.LEFT:
                         self.left = x
-                        set_bound_res = self.world.set_bound(Direction.LEFT, x)
+                        self.world.set_bound(Direction.LEFT, x)
                 # res.update(set_bound_res)
         if action == None:
             pass

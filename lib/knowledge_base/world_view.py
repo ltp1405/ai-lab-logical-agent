@@ -9,11 +9,7 @@ class WorldView:
     ky = [0, 0, 1, -1]
 
     def __init__(self) -> None:
-        self.cells: List[List[Cell]] = []
-        for i in range(22):
-            self.cells.append([])
-            for _ in range(22):
-                self.cells[i].append(Cell())
+        self.cells = [[Cell() for _ in range(22)] for _ in range(22)]
 
     def __str__(self) -> str:
         s = ""
@@ -28,7 +24,7 @@ class WorldView:
         return self.cells[x + 11][y + 11]
 
     def set_item(
-            self, pos: Tuple[int, int, str], cell: CellValue
+        self, pos: Tuple[int, int, str], cell: CellValue
     ) -> Dict[Tuple[int, int], Any]:
         x, y, attr = pos
         res: Dict[Tuple[int, int], Any] = {}
@@ -132,27 +128,46 @@ class WorldView:
             raise TypeError("cell must be Cell or CellValue")
         return res
 
-    def set_bound(self, direction: Direction, value: int) -> Dict[Tuple[int, int], Any]:
-        res: Dict[Tuple[int, int], Any] = {}
+    def set_bound(self, direction: Direction, value: int) -> None:
         match direction:
             case Direction.UP:
                 for i in range(-11, value - 1):
                     for j in range(-11, 10):
                         self.cells[i + 11][j + 11].is_oob = True
-                        res[(i, j)] = self.cells[i + 11][j + 11]
             case Direction.RIGHT:
                 for i in range(-11, 10):
-                    for j in range(-11, value - 1):
+                    for j in range(value + 1, 10):
                         self.cells[i + 11][j + 11].is_oob = True
-                        res[(i, j)] = self.cells[i + 11][j + 11]
             case Direction.DOWN:
                 for i in range(value + 1, 10):
                     for j in range(-11, 10):
                         self.cells[i + 11][j + 11].is_oob = True
-                        res[(i, j)] = self.cells[i + 11][j + 11]
             case Direction.LEFT:
                 for i in range(-11, 10):
-                    for j in range(value + 1, 10):
+                    for j in range(-11, value - 1):
                         self.cells[i + 11][j + 11].is_oob = True
-                        res[(i, j)] = self.cells[i + 11][j + 11]
-        return res
+
+    # def set_bound(self, direction: Direction, value: int) -> Dict[Tuple[int, int], Any]:
+    #     res: Dict[Tuple[int, int], Any] = {}
+    #     match direction:
+    #         case Direction.UP:
+    #             for i in range(-11, value - 1):
+    #                 for j in range(-11, 10):
+    #                     self.cells[i + 11][j + 11].is_oob = True
+    #                     res[(i, j)] = self.cells[i + 11][j + 11]
+    #         case Direction.RIGHT:
+    #             for i in range(-11, 10):
+    #                 for j in range(-11, value - 1):
+    #                     self.cells[i + 11][j + 11].is_oob = True
+    #                     res[(i, j)] = self.cells[i + 11][j + 11]
+    #         case Direction.DOWN:
+    #             for i in range(value + 1, 10):
+    #                 for j in range(-11, 10):
+    #                     self.cells[i + 11][j + 11].is_oob = True
+    #                     res[(i, j)] = self.cells[i + 11][j + 11]
+    #         case Direction.LEFT:
+    #             for i in range(-11, 10):
+    #                 for j in range(value + 1, 10):
+    #                     self.cells[i + 11][j + 11].is_oob = True
+    #                     res[(i, j)] = self.cells[i + 11][j + 11]
+    #     return res
