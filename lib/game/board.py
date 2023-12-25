@@ -20,6 +20,7 @@ class Board:
             [False for _ in range(self.model.width)] for _ in range(self.model.height)
         ]
         # y, x
+        self.font = pygame.font.SysFont("Mono", 20)
 
     def draw(self, surface: pygame.Surface):
         self.board_surface.fill((0, 0, 0))
@@ -37,25 +38,26 @@ class Board:
                     self._draw_tile(x, y)
 
     def _draw_kb_tile(self, x, y):
+        font = self.font
         cell = self.model.mapped_known_tiles()[(x, y)]
         text = ""
         color = (255, 255, 255)
         if cell.is_safe:
             color = (0, 255, 0)
             text += "Safe"
-        elif cell.is_wumpus == CellValue.MAYBE:
-            color = "#b76014"
-            text += "W?"
-        elif cell.is_wumpus == CellValue.TRUE:
-            color = (255, 0, 0)
-            text += "W"
-        elif cell.is_pit == CellValue.MAYBE:
-            color = "#b76014"
-            text += "P?"
-        elif cell.is_pit == CellValue.TRUE:
-            color = "#b76014"
-            text += "P"
-        font = pygame.font.SysFont("Mono", 20)
+        else:
+            if cell.is_wumpus == CellValue.MAYBE:
+                color = "#b76014"
+                text += "W?"
+            if cell.is_wumpus == CellValue.TRUE:
+                color = (255, 0, 0)
+                text += "W"
+            if cell.is_pit == CellValue.MAYBE:
+                color = "#b76014"
+                text += "P?"
+            if cell.is_pit == CellValue.TRUE:
+                color = "#b76014"
+                text += "P"
         pygame.draw.rect(
             self.board_surface,
             color,
@@ -80,6 +82,7 @@ class Board:
             self._draw_kb_tile(*pos)
 
     def _draw_tile(self, x, y):
+        font = self.font
         tile_type = self.model.board[y][x]
         if (y, x) == (self.model.height - 1, 0):
             color = (0, 255, 0)
@@ -114,7 +117,6 @@ class Board:
         else:
             color = (100, 100, 100)
             text = ""
-        font = pygame.font.SysFont("Mono", 20)
         pygame.draw.rect(
             self.board_surface,
             color,

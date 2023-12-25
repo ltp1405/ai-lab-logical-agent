@@ -110,12 +110,13 @@ class BoardModel:
                 self.points += MOVE_POINTS
                 tiles = self._current_agent_tile_on_board()
                 percepts = Percepts()
+                remove_gold = False
                 for tile in tiles:
                     if tile == TileType.GOLD:
                         self.points += GOLD_POINTS
                         print(f"Points: {self.points}")
                         percepts["glitter"] = True
-                        self.board_data.board_data[y][x].remove(TileType.GOLD)
+                        remove_gold = True
                     elif tile == TileType.PIT:
                         self.points += PIT_POINTS
                         self.game_over = True
@@ -128,6 +129,8 @@ class BoardModel:
                         percepts["breeze"] = True
                     elif tile == TileType.STENCH:
                         percepts["stench"] = True
+                if remove_gold:
+                    self.board_data.board_data[y][x].remove(TileType.GOLD)
                 self.current_percepts = percepts
                 return percepts
             else:
