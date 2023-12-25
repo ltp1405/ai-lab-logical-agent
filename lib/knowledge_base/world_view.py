@@ -15,19 +15,21 @@ class WorldView:
             for _ in range(22):
                 self.cells[i].append(Cell())
 
-    def __get_item__(self, x: int, y: int) -> Cell:
+    def __getitem__(self, pos: Tuple[int, int]) -> Cell:
+        x, y = pos
         return self.cells[x + 11][y + 11]
 
-    def __set_item__(self, x: int, y: int, cell: Cell | Tuple[str, CellValue]) -> None:
-        if isinstance(cell, Tuple[str, CellValue]):
+    def __setitem__(self, x: int, y: int, cell: Cell | Tuple[str, CellValue]) -> None:
+        not_pit_cnt = 0
+        if isinstance(cell, Tuple):
             self.cells[x + 11][y + 11].__setattr__(cell[0], cell[1])
             if self.cells[x + 11][y + 11].is_empty == True:
                 for i in range(4):
                     self.cells[x + self.kx[i] + 11][y + self.ky[i] + 11].is_safe = True
             match cell:
                 case ("is_stench", CellValue.TRUE):
+                    not_wumpus_cnt = 0
                     for i in range(4):
-                        not_wumpus_cnt = 0
                         if (
                             self.cells[x + self.kx[i] + 11][
                                 y + self.ky[i] + 11
@@ -71,8 +73,8 @@ class WorldView:
                                 y + self.ky[i] + 11
                             ].is_wumpus = CellValue.FALSE
                 case ("is_breeze", CellValue.TRUE):
+                    not_pit_cnt = 0
                     for i in range(4):
-                        not_pit_cnt = 0
                         if (
                             self.cells[x + self.kx[i] + 11][y + self.ky[i] + 11].is_pit
                             == CellValue.FALSE

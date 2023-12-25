@@ -52,7 +52,7 @@ class Board:
         self._update_percepts()
         self.revealed[self.agent[0]][self.agent[1]] = True
 
-    def _current_agent_tiles(self) -> List[TileType]:
+    def _current_agent_tiles(self) -> set[TileType]:
         y, x = self.agent
         return self.board_data.board_data[y][x]
 
