@@ -28,8 +28,9 @@ class WorldView:
         return self.cells[x + 11][y + 11]
 
     def __setitem__(
-        self, x: int, y: int, cell: Cell | Tuple[str, CellValue]
+        self, pos: Tuple[int, int], cell: Cell | Tuple[str, CellValue]
     ) -> Dict[Tuple[int, int], Any]:
+        x, y = pos
         res: Dict[Tuple[int, int], Any] = {}
         if isinstance(cell, Tuple):
             self.cells[x + 11][y + 11].__setattr__(cell[0], cell[1])
