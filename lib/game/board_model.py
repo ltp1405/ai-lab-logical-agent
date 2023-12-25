@@ -1,3 +1,5 @@
+from collections import namedtuple
+from dataclasses import dataclass
 import enum
 from lib.game.board_data import BoardData, TileType
 from lib.percepts import Percepts
@@ -23,6 +25,12 @@ class Action(enum.Enum):
     CLIMB = 3
 
 
+@dataclass
+class Position:
+    x: int
+    y: int
+
+
 class BoardModel:
     def __init__(self, board_data: BoardData):
         self.board_data = board_data
@@ -31,30 +39,31 @@ class BoardModel:
             [False for _ in range(self.board_data.width)]
             for _ in range(self.board_data.height)
         ]
-        # y, x
         self.width = board_data.width
         self.height = board_data.height
-        self.agent = board_data.initial_agent_pos
+        # x, y
+        self._agent = Position(
+            x=self.board_data.initial_agent_pos[1],
+            y=self.board_data.height - 1 - self.board_data.initial_agent_pos[0],
+        )
         self.agent_direction = Direction.RIGHT
         self.points = 0
         self.game_over = False
         self.current_percepts = Percepts()
         self._update_percepts()
-        self.revealed[self.agent[0]][self.agent[1]] = True
-        self.initial_agent_pos = board_data.initial_agent_pos
+        self.revealed[self._agent.y][self._agent.x] = True
+        self.initial_agent_pos = self._agent
 
-    def _current_agent_tiles(self) -> set[TileType]:
-        y, x = self.agent
+    def _current_agent_tile_on_board(self) -> set[TileType]:
+        y, x = self._agent.y, self._agent.x
+        y = self.board_data.height - 1 - y
         return self.board_data.board_data[y][x]
-
-    def current_agent_position(self) -> tuple[int, int]:
-        return self.agent
 
     def change_agent_direction(self, direction: Direction):
         self.agent_direction = direction
 
     def _update_percepts(self):
-        tiles = self._current_agent_tiles()
+        tiles = self._current_agent_tile_on_board()
         percepts = Percepts()
         for tile in tiles:
             if tile == TileType.GOLD:
@@ -76,9 +85,9 @@ class BoardModel:
         if self.game_over:
             raise Exception(f"Game is over: {self.points} points")
         if action == Action.MOVE:
-            y, x = self.agent
+            y, x = self._agent.y, self._agent.x
             if (
-                self.agent == (self.board_data.height - 1, 0)
+                self._agent == Position(x=0, y=0)
                 and self.agent_direction == Direction.DOWN
             ):
                 self.points += CLIMB_OUT_POINTS
@@ -86,18 +95,20 @@ class BoardModel:
                 print(f"Points: {self.points}")
                 return self.current_percepts
             if self.agent_direction == Direction.UP:
-                y -= 1
-            elif self.agent_direction == Direction.DOWN:
                 y += 1
+            elif self.agent_direction == Direction.DOWN:
+                y -= 1
             elif self.agent_direction == Direction.LEFT:
                 x -= 1
             elif self.agent_direction == Direction.RIGHT:
                 x += 1
             if 0 <= y < self.board_data.height and 0 <= x < self.board_data.width:
-                self.agent = (y, x)
+                self._agent = Position(x=x, y=y)
+                y = self.board_data.height - 1 - y
+                x = self._agent.x
                 self.revealed[y][x] = True
                 self.points += MOVE_POINTS
-                tiles = self._current_agent_tiles()
+                tiles = self._current_agent_tile_on_board()
                 percepts = Percepts()
                 for tile in tiles:
                     if tile == TileType.GOLD:
@@ -131,12 +142,12 @@ class BoardModel:
             return percepts
 
         elif action == Action.CLIMB:
-            if self.agent == (self.board_data.height - 1, 0):
+            if self._agent == Position(x=0, y=0):
                 self.points += CLIMB_OUT_POINTS
                 self.game_over = True
                 print(f"Points: {self.points}")
                 return self.current_percepts
-            raise Exception("Cannot climb out: not at (1, 1)")
+            raise Exception("Cannot climb out: not at (0, 0)")
 
     def _remove_stench_around(self, x: int, y: int):
         try:
@@ -160,47 +171,62 @@ class BoardModel:
         except IndexError:
             pass
 
+    def model_agent_position(self) -> Position:
+        """
+        Row-first top-down position of the agent
+        """
+        return self._agent
+
+    def tl_agent_position(self) -> Position:
+        """
+        Position of the agent relative to the top-left corner
+        """
+        return Position(
+            x=self._agent.x,
+            y=self.board_data.height - 1 - self._agent.y,
+        )
+
     def _shoot(self) -> bool:
         self.points += ARROW_POINTS
         match self.agent_direction:
             case Direction.UP:
-                for y in range(self.agent[0] - 1, -1, -1):
-                    if self.board_data.board_data[y][self.agent[1]] == [
+                for y in range(self._agent.y + 1, -1, -1):
+                    if self.board_data.board_data[y][self._agent.x] == [
                         TileType.WUMPUS
                     ]:
-                        self.board_data.board_data[y][self.agent[1]].remove(
+                        self.board_data.board_data[y][self._agent.x].remove(
                             TileType.WUMPUS
                         )
-                        self._remove_stench_around(self.agent[1], y)
+                        self._remove_stench_around(self._agent.x, y)
                         return True
             case Direction.DOWN:
-                for y in range(self.agent[0] + 1, self.board_data.height):
-                    if self.board_data.board_data[y][self.agent[1]] == [
+                for y in range(self._agent.y - 1, self.board_data.height):
+                    if self.board_data.board_data[y][self._agent.x] == [
                         TileType.WUMPUS
                     ]:
-                        self.board_data.board_data[y][self.agent[1]].remove(
+                        self.board_data.board_data[y][self._agent.x].remove(
                             TileType.WUMPUS
                         )
-                        self._remove_stench_around(self.agent[1], y)
+                        self._remove_stench_around(self._agent.x, y)
                         return True
             case Direction.LEFT:
-                for x in range(self.agent[1] - 1, -1, -1):
-                    if self.board_data.board_data[self.agent[0]][x] == [
+                for x in range(self._agent.x - 1, -1, -1):
+                    if self.board_data.board_data[self._agent.y][x] == [
                         TileType.WUMPUS
                     ]:
-                        self.board_data.board_data[self.agent[0]][x].remove(
+                        self.board_data.board_data[self._agent.y][x].remove(
                             TileType.WUMPUS
                         )
-                        self._remove_stench_around(x, self.agent[0])
+                        self._remove_stench_around(x, self._agent.y)
                         return True
             case Direction.RIGHT:
-                for x in range(self.agent[1] + 1, self.board_data.width):
-                    if self.board_data.board_data[self.agent[0]][x] == [
+                for x in range(self._agent.x + 1, self.board_data.width):
+                    if self.board_data.board_data[self._agent.y][x] == [
                         TileType.WUMPUS
                     ]:
-                        self.board_data.board_data[self.agent[0]][x].remove(
+                        self.board_data.board_data[self._agent.y][x].remove(
                             TileType.WUMPUS
                         )
-                        self._remove_stench_around(x, self.agent[0])
+                        self._remove_stench_around(x, self._agent.y)
                         return True
         return False

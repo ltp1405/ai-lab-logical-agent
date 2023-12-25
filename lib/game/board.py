@@ -2,10 +2,12 @@ from lib.game.board_model import BoardModel, Direction
 import pygame
 
 from lib.game.board_data import BoardData, TileType
+from lib.game.board_with_kb import BoardModelWithKB
+from lib.knowledge_base.cell import CellValue
 
 
 class Board:
-    def __init__(self, board_model: BoardModel, x: int, y: int, tile_size: int):
+    def __init__(self, board_model: BoardModelWithKB, x: int, y: int, tile_size: int):
         self.model = board_model
         self.tile_size = tile_size
         self.x = x
@@ -22,6 +24,7 @@ class Board:
     def draw(self, surface: pygame.Surface):
         self.board_surface.fill((0, 0, 0))
         self._draw_tiles()
+        self._draw_kb()
         self._draw_agent()
         # self._draw_grid()
         # self._draw_border()
@@ -32,6 +35,49 @@ class Board:
             for x, _ in enumerate(row):
                 if self.revealed[y][x]:
                     self._draw_tile(x, y)
+
+    def _draw_kb_tile(self, x, y):
+        cell = self.model.mapped_known_tiles()[(x, y)]
+        text = ""
+        color = (255, 255, 255)
+        if cell.is_safe:
+            color = (0, 255, 0)
+            text += "Safe"
+        elif cell.is_wumpus == CellValue.MAYBE:
+            color = "#b76014"
+            text += "W?"
+        elif cell.is_wumpus == CellValue.TRUE:
+            color = (255, 0, 0)
+            text += "W"
+        elif cell.is_pit == CellValue.MAYBE:
+            color = "#b76014"
+            text += "P?"
+        elif cell.is_pit == CellValue.TRUE:
+            color = "#b76014"
+            text += "P"
+        font = pygame.font.SysFont("Mono", 20)
+        pygame.draw.rect(
+            self.board_surface,
+            color,
+            (
+                x * self.tile_size,
+                y * self.tile_size,
+                self.tile_size,
+                self.tile_size,
+            ),
+        )
+        text_surface = font.render(text, True, (0, 0, 0))
+        self.board_surface.blit(
+            text_surface,
+            (
+                x * self.tile_size + self.tile_size / 2 - text_surface.get_width() / 2,
+                y * self.tile_size + self.tile_size / 2 - text_surface.get_height() / 2,
+            ),
+        )
+
+    def _draw_kb(self):
+        for pos, _ in self.model.mapped_known_tiles().items():
+            self._draw_kb_tile(*pos)
 
     def _draw_tile(self, x, y):
         tile_type = self.model.board[y][x]
@@ -89,7 +135,7 @@ class Board:
         )
 
     def _draw_agent(self):
-        y, x = self.model.agent
+        y, x = self.model.tl_agent_position().y, self.model.tl_agent_position().x
         pygame.draw.rect(
             self.board_surface,
             (0, 255, 0),
