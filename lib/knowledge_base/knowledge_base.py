@@ -22,7 +22,7 @@ class KnowledgeBase:
                 if self.left != None and self.bottom != None:
                     return (self.left, self.bottom)
             case "safe_cells":
-                safe_cells = []
+                safe_cells: List[Tuple[int, int]] = []
                 for i in range(22):
                     for j in range(22):
                         if self.world[(i, j)].is_safe:
@@ -68,19 +68,22 @@ class KnowledgeBase:
         percept: Percepts,
         action: Tuple[Action, Direction] | None = None,
     ) -> None:
-        if action == None:
-            raise Error("TODO")
         if percept["bump"]:
-            match action[1]:
-                case Direction.UP:
-                    self.top = y
-                case Direction.RIGHT:
-                    self.right = x
-                case Direction.DOWN:
-                    self.bottom = y
-                case Direction.LEFT:
-                    self.left = x
-        if percept["scream"] or action[0] == Action.SHOOT:
+            if action == None:
+                raise Error("No action provided for bump percept")
+            else:
+                match action[1]:
+                    case Direction.UP:
+                        self.top = y
+                    case Direction.RIGHT:
+                        self.right = x
+                    case Direction.DOWN:
+                        self.bottom = y
+                    case Direction.LEFT:
+                        self.left = x
+        if action == None:
+            pass
+        elif percept["scream"] or action[0] == Action.SHOOT:
             match action[1]:
                 case Direction.UP:
                     self.world[(x, y + 1)].is_safe = True
