@@ -27,20 +27,20 @@ class WorldView:
         x, y = pos
         return self.cells[x + 11][y + 11]
 
-    def __setitem__(
-        self, pos: Tuple[int, int], cell: Cell | Tuple[str, CellValue]
+    def set_item(
+            self, pos: Tuple[int, int, str], cell: CellValue
     ) -> Dict[Tuple[int, int], Any]:
-        x, y = pos
+        x, y, attr = pos
         res: Dict[Tuple[int, int], Any] = {}
-        if isinstance(cell, Tuple):
-            self.cells[x + 11][y + 11].__setattr__(cell[0], cell[1])
+        if isinstance(cell, CellValue):
+            self.cells[x + 11][y + 11].__setattr__(attr, cell)
             if self.cells[x + 11][y + 11].is_empty == True:
                 for i in range(4):
                     self.cells[x + self.kx[i] + 11][y + self.ky[i] + 11].is_safe = True
                     res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                         x + self.kx[i] + 11
                     ][y + self.ky[i] + 11]
-            match cell:
+            match (attr, cell):
                 case ("is_stench", CellValue.TRUE):
                     not_wumpus_cnt = 0
                     for i in range(4):
@@ -128,10 +128,6 @@ class WorldView:
                                 res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                     x + self.kx[i] + 11
                                 ][y + self.ky[i] + 11]
-
-        elif isinstance(cell, Cell):
-            self.cells[x + 11][y + 11] = cell
-            res[(x, y)] = self.cells[x + 11][y + 11]
         else:
             raise TypeError("cell must be Cell or CellValue")
         return res

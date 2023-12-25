@@ -7,7 +7,7 @@ class CellValue(Enum):
     TRUE = 1
     FALSE = 2
     MAYBE = 3
-    UNKNOWN = 3
+    UNKNOWN = 4
 
     def __str__(self) -> str:
         match self:
@@ -40,7 +40,7 @@ class Cell:
 
     @property
     def is_empty(self):
-        match (self.is_wumpus, self.is_pit):
+        match (self.is_breeze, self.is_stench):
             case (CellValue.FALSE, CellValue.FALSE):
                 return True
             case _:
@@ -78,6 +78,7 @@ class Cell:
 
     @is_wumpus.setter
     def is_wumpus(self, value):
+        self._is_wumpus = value
         if value == CellValue.TRUE:
             self.is_pit = CellValue.FALSE
             self.is_gold = CellValue.FALSE
@@ -88,6 +89,7 @@ class Cell:
 
     @is_pit.setter
     def is_pit(self, value):
+        self._is_pit = value
         if value == CellValue.TRUE:
             self.is_wumpus = CellValue.FALSE
             self.is_gold = CellValue.FALSE
@@ -101,13 +103,4 @@ class Cell:
         if value == CellValue.TRUE:
             self.is_gold = CellValue.TRUE
         else:
-            self.is_gold = CellValue.FALSE
-
-    @is_oob.setter
-    def is_oob(self, value):
-        if value:
-            self.is_wumpus = CellValue.FALSE
-            self.is_pit = CellValue.FALSE
-            self.is_stench = CellValue.FALSE
-            self.is_breeze = CellValue.FALSE
             self.is_gold = CellValue.FALSE

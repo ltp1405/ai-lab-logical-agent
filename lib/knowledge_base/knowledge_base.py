@@ -7,14 +7,12 @@ from lib.percepts import Percepts
 
 
 class KnowledgeBase:
-    world: WorldView
-    top: int | None
-    right: int | None
-    bottom: int | None
-    left: int | None
-
     def __init__(self) -> None:
-        self.world = WorldView()
+        self.world: WorldView = WorldView()
+        self.top: int | None = None
+        self.right: int | None = None
+        self.bottom: int | None = None
+        self.left: int | None = None
 
     def __getattribute__(self, __name: str) -> Any:
         match __name:
@@ -69,6 +67,7 @@ class KnowledgeBase:
         action: Tuple[Action, Direction] | None = None,
     ) -> Dict[Tuple[int, int], Any]:
         res: Dict[Tuple[int, int], Any] = {}
+        self.world[(x, y)].is_safe = True
         if percept["bump"]:
             if action == None:
                 raise Error("No action provided for bump percept")
@@ -104,18 +103,22 @@ class KnowledgeBase:
                 case Direction.RIGHT:
                     self.world[(x - 1, y)].is_safe = True
                     res[(x - 1, y)] = self.world[(x - 1, y)]
+        stench_res: Dict[Tuple[int, int], Any]
         if percept["stench"]:
-            self.world[(x, y)].is_stench = CellValue.TRUE
+            stench_res = self.world.set_item((x, y, "is_stench"), CellValue.TRUE)
         else:
-            self.world[(x, y)].is_stench = CellValue.FALSE
+            stench_res = self.world.set_item((x, y, "is_stench"), CellValue.FALSE)
+        res.update(stench_res)
+        breeze_res: Dict[Tuple[int, int], Any]
         if percept["breeze"]:
-            self.world[(x, y)].is_breeze = CellValue.TRUE
+            breeze_res = self.world.set_item((x, y, "is_breeze"), CellValue.TRUE)
         else:
-            self.world[(x, y)].is_breeze = CellValue.FALSE
+            breeze_res = self.world.set_item((x, y, "is_breeze"), CellValue.FALSE)
+        res.update(breeze_res)
         if percept["glitter"]:
-            self.world[(x, y)].is_glitter = CellValue.TRUE
+            self.world[(x, y)].is_gold = CellValue.TRUE
         else:
-            self.world[(x, y)].is_glitter = CellValue.FALSE
+            self.world[(x, y)].is_gold = CellValue.FALSE
         res[(x, y)] = self.world[(x, y)]
         return res
 
