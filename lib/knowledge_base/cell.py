@@ -8,6 +8,17 @@ class CellValue(Enum):
     MAYBE = 3
     UNKNOWN = 3
 
+    def __str__(self) -> str:
+        match self:
+            case CellValue.TRUE:
+                return "T"
+            case CellValue.FALSE:
+                return "F"
+            case CellValue.MAYBE:
+                return "M"
+            case CellValue.UNKNOWN:
+                return "U"
+
 
 class Cell:
     is_gold: CellValue
@@ -22,6 +33,9 @@ class Cell:
         self.is_pit = CellValue.UNKNOWN
         self.is_stench = CellValue.UNKNOWN
         self.is_breeze = CellValue.UNKNOWN
+
+    def __str__(self) -> str:
+        return f"(G: {self.is_gold}, W: {self.is_wumpus}, P: {self.is_pit}, S: {self.is_stench}, B: {self.is_breeze})"
 
     def __getattribute__(self, __name: str) -> Any:
         match __name:
