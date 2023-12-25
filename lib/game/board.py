@@ -86,6 +86,11 @@ class Board:
             raise Exception(f"Game is over: {self.points} points")
         if action == Action.MOVE:
             y, x = self.agent
+            if self.agent == (self.board_data.height - 1, 0) and self.agent_direction == Direction.DOWN:
+                self.points += CLIMB_OUT_POINTS
+                self.game_over = True
+                print(f"Points: {self.points}")
+                return self.current_percepts
             if self.agent_direction == Direction.UP:
                 y -= 1
             elif self.agent_direction == Direction.DOWN:
