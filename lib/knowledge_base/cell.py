@@ -32,9 +32,6 @@ class Cell:
         self.is_stench: CellValue = CellValue.UNKNOWN
         self.is_breeze: CellValue = CellValue.UNKNOWN
 
-    def __str__(self) -> str:
-        return f"(G: {self.is_gold}, W: {self.is_wumpus}, P: {self.is_pit}, S: {self.is_stench}, B: {self.is_breeze})"
-
     def __repr__(self) -> str:
         return f"(G: {self.is_gold}, W: {self.is_wumpus}, P: {self.is_pit}, S: {self.is_stench}, B: {self.is_breeze})"
 
@@ -68,8 +65,6 @@ class Cell:
         if value:
             self._is_wumpus = CellValue.FALSE
             self._is_pit = CellValue.FALSE
-            self.is_stench = CellValue.FALSE
-            self.is_breeze = CellValue.FALSE
             self.is_gold = CellValue.FALSE
 
     @property
