@@ -19,8 +19,8 @@ if __name__ == "__main__":
     s_width, s_height = screen.get_size()
     middle = s_width // 2, s_height // 2
     board_x, board_y = (
-        middle[0] - board_data.initial_agent_pos[0] * TILE_SIZE,
-        middle[1] - board_data.initial_agent_pos[1] * TILE_SIZE,
+        middle[0] - (board_data.initial_agent_pos[1] + 1) * TILE_SIZE,
+        middle[1] - (board_data.initial_agent_pos[0] + 1) * TILE_SIZE,
     )
     kb = KnowledgeBase()
     board_model = BoardModelWithKB(board_data, kb)

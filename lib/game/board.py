@@ -14,16 +14,19 @@ class Board:
         self.y = y
         self.height = self.model.height * self.tile_size
         self.width = self.model.width * self.tile_size
-        self.board_surface = pygame.Surface((self.width, self.height))
+        self.board_surface = pygame.Surface(
+            (self.width + 2 * tile_size, self.height + 2 * tile_size)
+        )
         self.grid_color = (255, 255, 255)
         self.revealed = [
             [False for _ in range(self.model.width)] for _ in range(self.model.height)
         ]
         # y, x
         self.font = pygame.font.SysFont("Mono", 20)
+        self.padding = 1
 
     def draw(self, surface: pygame.Surface):
-        self.board_surface.fill((255, 255, 255))
+        self.board_surface.fill((0, 0, 0))
         self._draw_tiles()
         self._draw_kb()
         self._draw_agent()
@@ -58,6 +61,8 @@ class Board:
             if cell.is_pit == CellValue.TRUE:
                 color = "#b76014"
                 text += "P"
+        x += self.padding
+        y += self.padding
         pygame.draw.rect(
             self.board_surface,
             color,
@@ -117,6 +122,8 @@ class Board:
         else:
             color = (100, 100, 100)
             text = ""
+        x += self.padding
+        y += self.padding
         pygame.draw.rect(
             self.board_surface,
             color,
@@ -138,6 +145,8 @@ class Board:
 
     def _draw_agent(self):
         y, x = self.model.tl_agent_position().y, self.model.tl_agent_position().x
+        y += self.padding
+        x += self.padding
         pygame.draw.rect(
             self.board_surface,
             (0, 255, 0),
