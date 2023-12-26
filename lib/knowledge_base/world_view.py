@@ -45,7 +45,7 @@ class WorldView:
                 if self.cells[(x, y)].is_empty == True:
                     for i in range(4):
                         self.cells[(x + self.kx[i], y + self.ky[i])].is_safe = True
-                        res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                        res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                             (x + self.kx[i], y + self.ky[i])
                         ]
                 if self.cells[(x, y)].is_stench == CellValue.TRUE:
@@ -63,7 +63,7 @@ class WorldView:
                             self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ].is_wumpus = CellValue.MAYBE
-                            res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                            res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ]
 
@@ -76,7 +76,7 @@ class WorldView:
                                 self.cells[
                                     (x + self.kx[i], y + self.ky[i])
                                 ].is_wumpus = CellValue.TRUE
-                                res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                                res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                     (x + self.kx[i], y + self.ky[i])
                                 ]
                 if self.cells[(x, y)].is_stench == CellValue.FALSE:
@@ -90,7 +90,7 @@ class WorldView:
                             self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ].is_wumpus = CellValue.FALSE
-                            res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                            res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ]
                 if self.cells[(x, y)].is_breeze == CellValue.TRUE:
@@ -108,7 +108,7 @@ class WorldView:
                             self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ].is_pit = CellValue.MAYBE
-                            res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                            res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ]
                     if not_pit_cnt == 3:
@@ -120,7 +120,7 @@ class WorldView:
                                 self.cells[
                                     (x + self.kx[i], y + self.ky[i])
                                 ].is_pit = CellValue.TRUE
-                                res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                                res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                     (x + self.kx[i], y + self.ky[i])
                                 ]
         return res
@@ -139,7 +139,7 @@ class WorldView:
     def set_bound(self, direction: Direction, value: int) -> None:
         match direction:
             case Direction.UP:
-                for y in range(-11, value - 1):
+                for y in range(value + 1, 10):
                     for x in range(-11, 10):
                         self.cells[(x, y)].is_oob = True
             case Direction.RIGHT:
@@ -147,7 +147,7 @@ class WorldView:
                     for x in range(value + 1, 10):
                         self.cells[(x, y)].is_oob = True
             case Direction.DOWN:
-                for y in range(value + 1, 10):
+                for y in range(-11, value - 1):
                     for x in range(-11, 10):
                         self.cells[(x, y)].is_oob = True
             case Direction.LEFT:
