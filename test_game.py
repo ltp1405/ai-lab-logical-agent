@@ -3,13 +3,18 @@ from lib.game.board import Board, Direction
 from lib.game.board_data import BoardData, read_board_data
 from lib.game.board_model import Action, BoardModel
 from lib.game.board_with_kb import BoardModelWithKB
+from lib.game.map_generator import generate_map
 from lib.knowledge_base.knowledge_base import KnowledgeBase
+from rich import print
 
 TILE_SIZE = 64
 
 if __name__ == "__main__":
     pygame.init()
     board_data = read_board_data("tests/map2.txt")
+    map = generate_map(seed=539)
+    print(map)
+    board_data = map.board_data
     screen = pygame.display.set_mode()
     s_width, s_height = screen.get_size()
     middle = s_width // 2, s_height // 2

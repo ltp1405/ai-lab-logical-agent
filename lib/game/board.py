@@ -23,7 +23,7 @@ class Board:
         self.font = pygame.font.SysFont("Mono", 20)
 
     def draw(self, surface: pygame.Surface):
-        self.board_surface.fill((0, 0, 0))
+        self.board_surface.fill((255, 255, 255))
         self._draw_tiles()
         self._draw_kb()
         self._draw_agent()

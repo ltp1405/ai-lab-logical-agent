@@ -193,43 +193,35 @@ class BoardModel:
         self.points += ARROW_POINTS
         match self.agent_direction:
             case Direction.UP:
-                for y in range(self._agent.y + 1, -1, -1):
-                    if self.board_data.board_data[y][self._agent.x] == [
-                        TileType.WUMPUS
-                    ]:
+                for y in range(self._agent.y + 1, self.board_data.height):
+                    y = self.board_data.height - 1 - y
+                    if TileType.WUMPUS in self.board_data.board_data[y][self._agent.x]:
                         self.board_data.board_data[y][self._agent.x].remove(
                             TileType.WUMPUS
                         )
                         self._remove_stench_around(self._agent.x, y)
                         return True
             case Direction.DOWN:
-                for y in range(self._agent.y - 1, self.board_data.height):
-                    if self.board_data.board_data[y][self._agent.x] == [
-                        TileType.WUMPUS
-                    ]:
+                for y in range(self._agent.y - 1, 0, -1):
+                    y = self.board_data.height - 1 - y
+                    if TileType.WUMPUS in self.board_data.board_data[y][self._agent.x]:
                         self.board_data.board_data[y][self._agent.x].remove(
                             TileType.WUMPUS
                         )
                         self._remove_stench_around(self._agent.x, y)
                         return True
             case Direction.LEFT:
-                for x in range(self._agent.x - 1, -1, -1):
-                    if self.board_data.board_data[self._agent.y][x] == [
-                        TileType.WUMPUS
-                    ]:
-                        self.board_data.board_data[self._agent.y][x].remove(
-                            TileType.WUMPUS
-                        )
-                        self._remove_stench_around(x, self._agent.y)
+                y = self.board_data.height - 1 - self._agent.y
+                for x in range(self._agent.x - 1, 0, -1):
+                    if TileType.WUMPUS in self.board_data.board_data[y][x]:
+                        self.board_data.board_data[y][x].remove(TileType.WUMPUS)
+                        self._remove_stench_around(x, y)
                         return True
             case Direction.RIGHT:
+                y = self.board_data.height - 1 - self._agent.y
                 for x in range(self._agent.x + 1, self.board_data.width):
-                    if self.board_data.board_data[self._agent.y][x] == [
-                        TileType.WUMPUS
-                    ]:
-                        self.board_data.board_data[self._agent.y][x].remove(
-                            TileType.WUMPUS
-                        )
-                        self._remove_stench_around(x, self._agent.y)
+                    if TileType.WUMPUS in self.board_data.board_data[y][x]:
+                        self.board_data.board_data[y][x].remove(TileType.WUMPUS)
+                        self._remove_stench_around(x, y)
                         return True
         return False

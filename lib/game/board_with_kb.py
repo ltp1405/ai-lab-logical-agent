@@ -3,6 +3,7 @@ from lib.game.board_data import BoardData
 from lib.game.board_model import BoardModel, Position
 from lib.knowledge_base.cell import Cell
 from lib.knowledge_base.knowledge_base import KnowledgeBase
+from rich import print
 
 
 class BoardModelWithKB(BoardModel):
@@ -17,6 +18,17 @@ class BoardModelWithKB(BoardModel):
                 self.current_percepts,
                 None,
             )
+        )
+
+    def known_bounds(self):
+        """
+        Known bounds of the board
+        """
+        return (
+            self.kb.top,
+            self.kb.bottom,
+            self.kb.left,
+            self.kb.right,
         )
 
     def virtual_agent_position(self):
@@ -39,6 +51,7 @@ class BoardModelWithKB(BoardModel):
         self.known_tiles.update(
             self.kb.tell(v_x, v_y, percepts, action=(action, agent_direction))
         )
+        print(self.known_tiles)
         return self.current_percepts
 
     def get_known_tiles(self) -> Dict[Tuple[int, int], Cell]:

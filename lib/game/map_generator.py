@@ -6,7 +6,7 @@ from rich.box import Box
 from rich.table import Table, box
 from rich.panel import Panel
 
-from lib.game.board_data import TileType
+from lib.game.board_data import BoardData, TileType, put_enviroment
 
 
 def _check_have_path_to_exit(map: list[list[set]], x: int, y: int) -> bool:
@@ -48,7 +48,9 @@ def _put_tiles(
             while True:
                 x = random.randint(0, len(map[0]) - 1)
                 y = random.randint(0, len(map) - 1)
-                if TileType.WUMPUS not in map[y][x]:
+                if TileType.WUMPUS not in map[y][x] and not (
+                    x != initial_agent_position[0] and y != initial_agent_position[1]
+                ):
                     map[y][x].add(TileType.WUMPUS)
                     current_wumpus_count += 1
                     break
@@ -56,11 +58,16 @@ def _put_tiles(
             while True:
                 x = random.randint(0, len(map[0]) - 1)
                 y = random.randint(0, len(map) - 1)
-                if TileType.PIT not in map[y][x]:
+                if TileType.PIT not in map[y][x] and not (
+                    x == initial_agent_position[0] and y != initial_agent_position[1]
+                ):
                     map[y][x].add(TileType.PIT)
-                    if _check_have_path_to_exit(
-                        map, initial_agent_position[0], initial_agent_position[1]
-                    ) == False:
+                    if (
+                        _check_have_path_to_exit(
+                            map, initial_agent_position[0], initial_agent_position[1]
+                        )
+                        == False
+                    ):
                         map[y][x].remove(TileType.PIT)
                         continue
                     current_pit_count += 1
@@ -73,6 +80,8 @@ def _put_tiles(
                     TileType.GOLD not in map[y][x]
                     and TileType.WUMPUS not in map[y][x]
                     and TileType.PIT not in map[y][x]
+                ) and (
+                    x != initial_agent_position[0] and y != initial_agent_position[1]
                 ):
                     map[y][x].add(TileType.GOLD)
                     current_gold_count += 1
@@ -86,11 +95,11 @@ def _put_tiles(
 
 
 def generate_map(
-    map_size: Tuple[int, int] | None = (4, 4),
-    initial_agent_position: Tuple[int, int] | None = (0, 0),
-    wumpus_count: None | int = 1,
-    pit_count: None | int = 3,
-    gold_count: None | int = 1,
+    map_size: Tuple[int, int] | None = None,
+    initial_agent_position: Tuple[int, int] | None = None,
+    wumpus_count: None | int = None,
+    pit_count: None | int = None,
+    gold_count: None | int = None,
     seed=1,
 ):
     previous_seed = random.getstate()
@@ -129,16 +138,24 @@ def generate_map(
     Result = namedtuple(
         "Map",
         [
-            "map",
-            "initial_agent_position",
+            "board_data",
             "wumpus_count",
             "pit_count",
             "gold_count",
         ],
     )
+    put_enviroment(map)
+    board_data = BoardData(
+        height=len(map),
+        width=len(map[0]),
+        board_data=map,
+        initial_agent_pos=(
+            initial_agent_position[0],
+            map_size[1] - initial_agent_position[1] - 1,
+        ),
+    )
     return Result(
-        map,
-        initial_agent_position,
+        board_data,
         wumpus_count,
         pit_count,
         gold_count,
