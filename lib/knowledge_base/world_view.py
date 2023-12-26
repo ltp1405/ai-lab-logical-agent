@@ -45,7 +45,7 @@ class WorldView:
                 if self.cells[(x, y)].is_empty == True:
                     for i in range(4):
                         self.cells[(x + self.kx[i], y + self.ky[i])].is_safe = True
-                        res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                        res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                             (x + self.kx[i], y + self.ky[i])
                         ]
                 if self.cells[(x, y)].is_stench == CellValue.TRUE:
@@ -133,7 +133,6 @@ class WorldView:
         self.cells[(x, y)].__setattr__(attr, cell)
         res = self.infer()
         res[(x, y)] = self.cells[(x, y)]
-        # print(res)
         return res
 
     def set_bound(self, direction: Direction, value: int) -> None:
