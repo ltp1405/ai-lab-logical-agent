@@ -90,7 +90,7 @@ class KnowledgeBase:
                 # res.update(set_bound_res)
         if action == None:
             pass
-        elif percept["scream"] or action[0] == Action.SHOOT:
+        elif percept["scream"]:
             match action[1]:
                 case Direction.UP:
                     self.world[(x, y + 1)].is_safe = True
@@ -100,10 +100,24 @@ class KnowledgeBase:
                     res[(x, y - 1)] = self.world[(x, y - 1)]
                 case Direction.LEFT:
                     self.world[(x + 1, y)].is_safe = True
-                    res[(x + 1, y)] = self.world[(x + 1, y)]
+                    res[(x + 1, y)] = self.world[(x - 1, y)]
                 case Direction.RIGHT:
                     self.world[(x - 1, y)].is_safe = True
-                    res[(x - 1, y)] = self.world[(x - 1, y)]
+                    res[(x - 1, y)] = self.world[(x + 1, y)]
+        elif action[0] == Action.SHOOT:
+            match action[1]:
+                case Direction.UP:
+                    self.world[(x, y + 1)].is_wumpus = True
+                    res[(x, y + 1)] = self.world[(x, y + 1)]
+                case Direction.DOWN:
+                    self.world[(x, y - 1)].is_wumpus = True
+                    res[(x, y - 1)] = self.world[(x, y - 1)]
+                case Direction.LEFT:
+                    self.world[(x + 1, y)].is_wumpus = True
+                    res[(x + 1, y)] = self.world[(x - 1, y)]
+                case Direction.RIGHT:
+                    self.world[(x - 1, y)].is_wumpus = True
+                    res[(x - 1, y)] = self.world[(x + 1, y)]
         stench_res: Dict[Tuple[int, int], Any]
         if percept["stench"]:
             stench_res = self.world.set_item((x, y, "is_stench"), CellValue.TRUE)
