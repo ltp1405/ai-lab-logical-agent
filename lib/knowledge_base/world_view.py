@@ -63,7 +63,7 @@ class WorldView:
                             self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ].is_wumpus = CellValue.MAYBE
-                            res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                            res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ]
 
@@ -76,7 +76,7 @@ class WorldView:
                                 self.cells[
                                     (x + self.kx[i], y + self.ky[i])
                                 ].is_wumpus = CellValue.TRUE
-                                res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                                res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                     (x + self.kx[i], y + self.ky[i])
                                 ]
                 if self.cells[(x, y)].is_stench == CellValue.FALSE:
@@ -90,7 +90,7 @@ class WorldView:
                             self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ].is_wumpus = CellValue.FALSE
-                            res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                            res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ]
                 if self.cells[(x, y)].is_breeze == CellValue.TRUE:
@@ -108,7 +108,7 @@ class WorldView:
                             self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ].is_pit = CellValue.MAYBE
-                            res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                            res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                 (x + self.kx[i], y + self.ky[i])
                             ]
                     if not_pit_cnt == 3:
@@ -120,7 +120,7 @@ class WorldView:
                                 self.cells[
                                     (x + self.kx[i], y + self.ky[i])
                                 ].is_pit = CellValue.TRUE
-                                res[(y + self.kx[i], x + self.ky[i])] = self.cells[
+                                res[(x + self.kx[i], y + self.ky[i])] = self.cells[
                                     (x + self.kx[i], y + self.ky[i])
                                 ]
         return res
