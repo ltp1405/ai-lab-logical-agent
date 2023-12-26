@@ -3,7 +3,6 @@ from lib.game.board_data import BoardData
 from lib.game.board_model import BoardModel, Position
 from lib.knowledge_base.cell import Cell
 from lib.knowledge_base.knowledge_base import KnowledgeBase
-from rich import print
 
 
 class BoardModelWithKB(BoardModel):
@@ -19,7 +18,6 @@ class BoardModelWithKB(BoardModel):
                 None,
             )
         )
-        print(self.mapped_known_tiles())
 
     def virtual_agent_position(self):
         """
@@ -41,7 +39,6 @@ class BoardModelWithKB(BoardModel):
         self.known_tiles.update(
             self.kb.tell(v_x, v_y, percepts, action=(action, agent_direction))
         )
-        print(self.mapped_known_tiles())
         return self.current_percepts
 
     def get_known_tiles(self) -> Dict[Tuple[int, int], Cell]:
@@ -50,7 +47,23 @@ class BoardModelWithKB(BoardModel):
         """
         return self.known_tiles
 
+    def model_known_tiles(self):
+        """
+        Known tiles in perspective of the board
+        """
+        known_tiles = dict()
+        for pos, cell in self.known_tiles.items():
+            pos = (
+                pos[0] + self.initial_agent_pos.x,
+                pos[1] + self.initial_agent_pos.y,
+            )
+            known_tiles[pos] = cell
+        return known_tiles
+
     def mapped_known_tiles(self):
+        """
+        Top-left corner is (0, 0), used to draw the board
+        """
         mapped_tiles = dict()
         for pos, cell in self.known_tiles.items():
             pos = (

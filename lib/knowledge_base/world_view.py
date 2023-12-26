@@ -133,7 +133,6 @@ class WorldView:
         self.cells[(x, y)].__setattr__(attr, cell)
         res = self.infer()
         res[(x, y)] = self.cells[(x, y)]
-        # print(res)
         return res
 
     def set_bound(self, direction: Direction, value: int) -> None:
