@@ -48,8 +48,13 @@ def _put_tiles(
             while True:
                 x = random.randint(0, len(map[0]) - 1)
                 y = random.randint(0, len(map) - 1)
-                if TileType.WUMPUS not in map[y][x] and not (
-                    x != initial_agent_position[0] and y != initial_agent_position[1]
+                if (
+                    TileType.WUMPUS not in map[y][x]
+                    and TileType.PIT not in map[y][x]
+                    and not (
+                        x != initial_agent_position[0]
+                        and y != initial_agent_position[1]
+                    )
                 ):
                     map[y][x].add(TileType.WUMPUS)
                     current_wumpus_count += 1
@@ -58,8 +63,13 @@ def _put_tiles(
             while True:
                 x = random.randint(0, len(map[0]) - 1)
                 y = random.randint(0, len(map) - 1)
-                if TileType.PIT not in map[y][x] and not (
-                    x == initial_agent_position[0] and y != initial_agent_position[1]
+                if (
+                    TileType.PIT not in map[y][x]
+                    and TileType.WUMPUS not in map[y][x]
+                    and not (
+                        x == initial_agent_position[0]
+                        and y != initial_agent_position[1]
+                    )
                 ):
                     map[y][x].add(TileType.PIT)
                     if (

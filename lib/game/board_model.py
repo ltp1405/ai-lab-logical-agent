@@ -208,6 +208,7 @@ class BoardModel:
                         self.board_data.board_data[y][self._agent.x].remove(
                             TileType.WUMPUS
                         )
+                        print("REMOVING WUMPUS")
                         self._remove_stench_around(self._agent.x, y)
                         return True
             case Direction.LEFT:
