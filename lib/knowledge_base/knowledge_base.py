@@ -93,31 +93,31 @@ class KnowledgeBase:
         elif percept["scream"]:
             match action[1]:
                 case Direction.UP:
-                    self.world[(x, y + 1)].is_safe = True
+                    self.world.set_item((x, y + 1, "is_safe"), True)
                     res[(x, y + 1)] = self.world[(x, y + 1)]
                 case Direction.DOWN:
-                    self.world[(x, y - 1)].is_safe = True
+                    self.world.set_item((x, y - 1, "is_safe"), True)
                     res[(x, y - 1)] = self.world[(x, y - 1)]
                 case Direction.LEFT:
-                    self.world[(x + 1, y)].is_safe = True
-                    res[(x + 1, y)] = self.world[(x - 1, y)]
+                    self.world.set_item((x - 1, y, "is_safe"), True)
+                    res[(x - 1, y)] = self.world[(x - 1, y)]
                 case Direction.RIGHT:
-                    self.world[(x - 1, y)].is_safe = True
-                    res[(x - 1, y)] = self.world[(x + 1, y)]
+                    self.world.set_item((x + 1, y, "is_safe"), True)
+                    res[(x + 1, y)] = self.world[(x + 1, y)]
         elif action[0] == Action.SHOOT:
             match action[1]:
                 case Direction.UP:
-                    self.world[(x, y + 1)].is_wumpus = True
+                    self.world.set_item((x, y + 1, "is_wumpus"), CellValue.FALSE)
                     res[(x, y + 1)] = self.world[(x, y + 1)]
                 case Direction.DOWN:
-                    self.world[(x, y - 1)].is_wumpus = True
+                    self.world.set_item((x, y - 1, "is_wumpus"), CellValue.FALSE)
                     res[(x, y - 1)] = self.world[(x, y - 1)]
                 case Direction.LEFT:
-                    self.world[(x + 1, y)].is_wumpus = True
-                    res[(x + 1, y)] = self.world[(x - 1, y)]
+                    self.world.set_item((x - 1, y, "is_wumpus"), CellValue.FALSE)
+                    res[(x - 1, y)] = self.world[(x - 1, y)]
                 case Direction.RIGHT:
-                    self.world[(x - 1, y)].is_wumpus = True
-                    res[(x - 1, y)] = self.world[(x + 1, y)]
+                    self.world.set_item((x + 1, y, "is_wumpus"), CellValue.FALSE)
+                    res[(x + 1, y)] = self.world[(x + 1, y)]
         stench_res: Dict[Tuple[int, int], Any]
         if percept["stench"]:
             stench_res = self.world.set_item((x, y, "is_stench"), CellValue.TRUE)

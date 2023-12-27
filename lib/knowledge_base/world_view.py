@@ -126,7 +126,7 @@ class WorldView:
         return res
 
     def set_item(
-        self, pos: Tuple[int, int, str], cell: CellValue
+        self, pos: Tuple[int, int, str], cell: CellValue | bool
     ) -> Dict[Tuple[int, int], Any]:
         x, y, attr = pos
         res: Dict[Tuple[int, int], Any] = {}
