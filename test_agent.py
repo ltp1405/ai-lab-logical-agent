@@ -7,25 +7,27 @@ from lib.knowledge_base.knowledge_base import KnowledgeBase
 from rich import print
 
 
-def move(agent: Agent, direction: Direction):
-    print(f"Moving {direction}")
-    agent.take_action(Action.MOVE, direction)
-
-
-def infer_then_move(agent: Agent, direction: Direction, alpha: tuple):
-    if not agent.infer(alpha=alpha):
-        move(agent, direction)
-    else:
-        print(f"Agent infers that there is no pit {alpha}")
-
-
 if __name__ == "__main__":
     board_data = read_board_data("tests/map1.txt")
     board = BoardModelWithKB(board_data, KnowledgeBase())
     agent = Agent(board=board)
     # move(agent, (0, -1))
-    stack = [(0, 0)]
-    visited = {(0, 0)}
-    print (agent.is_alive())
-    is_alive = agent.is_alive()
+    print ("Safe cells: ", agent.safe_rooms())
+    print ("Wumpus cells: ", agent.wumpus_rooms())
+    print ("Pit cells: ", agent.pit_rooms())
+    
+    agent.take_action(Action.MOVE, (1, 0))
+    
+    print ("Safe cells: ", agent.safe_rooms())
+    print ("Wumpus cells: ", agent.wumpus_rooms())
+    print ("Pit cells: ", agent.pit_rooms())
+    
+    agent.take_action(Action.MOVE, (0, 0))
+    agent.take_action(Action.MOVE, (0, 1))
+    
+    print ("Safe cells: ", agent.safe_rooms())
+    print ("Wumpus cells: ", agent.wumpus_rooms())
+    print ("Pit cells: ", agent.pit_rooms())
+    
+    
 
