@@ -22,6 +22,18 @@ class CellValue(Enum):
 
     def __repr__(self) -> str:
         return str(self)
+    
+    @staticmethod
+    def negate(value: "CellValue") -> "CellValue":
+        match value:
+            case CellValue.TRUE:
+                return CellValue.FALSE
+            case CellValue.FALSE:
+                return CellValue.TRUE
+            case CellValue.MAYBE:
+                return CellValue.MAYBE
+            case CellValue.UNKNOWN:
+                return CellValue.UNKNOWN
 
 
 class Cell:

@@ -1,4 +1,4 @@
-from copy import Error
+from copy import Error, deepcopy
 from typing import Any, Dict, List, Tuple
 from lib.game.board_model import Action, Direction
 from lib.knowledge_base.cell import CellValue

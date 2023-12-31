@@ -1,6 +1,6 @@
 from typing import Dict, Tuple
 from lib.game.board_data import BoardData
-from lib.game.board_model import BoardModel, Position
+from lib.game.board_model import BoardModel, Direction, Position
 from lib.knowledge_base.cell import Cell
 from lib.knowledge_base.knowledge_base import KnowledgeBase
 from rich import print
@@ -39,7 +39,32 @@ class BoardModelWithKB(BoardModel):
             x=self._agent.x - self.initial_agent_pos.x,
             y=self._agent.y - self.initial_agent_pos.y,
         )
-
+        
+    def adjacent_rooms(self):
+        """
+        Adjacent rooms of the agent
+        """
+        x, y = self.virtual_agent_position().x, self.virtual_agent_position().y
+        return [
+            (x + 1, y),
+            (x - 1, y),
+            (x, y + 1),
+            (x, y - 1),
+        ]
+        
+    def identify_direction_to_modify(self, to_room: Tuple[int, int]) -> Direction:
+        x, y = self.virtual_agent_position().x, self.virtual_agent_position().y
+        if to_room == (x + 1, y):
+            return Direction.RIGHT
+        elif to_room == (x - 1, y):
+            return Direction.LEFT
+        elif to_room == (x, y + 1):
+            return Direction.UP
+        elif to_room == (x, y - 1):
+            return Direction.DOWN
+        else:
+            raise ValueError("Invalid room")
+        
     def act(self, action):
         """
         Act in the board
@@ -51,7 +76,8 @@ class BoardModelWithKB(BoardModel):
         self.known_tiles.update(
             self.kb.tell(v_x, v_y, percepts, action=(action, agent_direction))
         )
-        print(self.known_tiles)
+        # print (f"Points: {super().points}")
+        # print(self.known_tiles)
         return self.current_percepts
 
     def get_known_tiles(self) -> Dict[Tuple[int, int], Cell]:
