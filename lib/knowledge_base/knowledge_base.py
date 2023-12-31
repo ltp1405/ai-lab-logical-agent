@@ -21,39 +21,39 @@ class KnowledgeBase:
                     return (self.left, self.bottom)
             case "safe_cells":
                 safe_cells: List[Tuple[int, int]] = []
-                for i in range(22):
-                    for j in range(22):
+                for i in range(-11, 10):
+                    for j in range(-11, 10):
                         if self.world[(i, j)].is_safe:
-                            safe_cells.append((i - 11, j - 11))
+                            safe_cells.append((i, j))
                 return safe_cells
             case "wumpus_cells":
                 wumpus_cells: List[Tuple[Tuple[int, int], CellValue]] = []
-                for i in range(22):
-                    for j in range(22):
+                for i in range(-11, 10):
+                    for j in range(-11, 10):
                         if self.world[(i, j)].is_wumpus == CellValue.TRUE:
                             wumpus_cells.insert(
                                 0,
-                                ((i - 11, j - 11), CellValue.TRUE),
+                                ((i, j), CellValue.TRUE),
                             )
                         elif self.world[(i, j)].is_wumpus == CellValue.MAYBE:
                             wumpus_cells.insert(
                                 -1,
-                                ((i - 11, j - 11), CellValue.MAYBE),
+                                ((i, j), CellValue.MAYBE),
                             )
                 return wumpus_cells
             case "pit_cells":
                 pit_cells: List[Tuple[Tuple[int, int], CellValue]] = []
-                for i in range(22):
-                    for j in range(22):
+                for i in range(-11, 10):
+                    for j in range(-11, 10):
                         if self.world[(i, j)].is_pit == CellValue.TRUE:
                             pit_cells.insert(
                                 0,
-                                ((i - 11, j - 11), CellValue.TRUE),
+                                ((i, j), CellValue.TRUE),
                             )
                         elif self.world[(i, j)].is_pit == CellValue.MAYBE:
                             pit_cells.insert(
                                 -1,
-                                ((i - 11, j - 11), CellValue.MAYBE),
+                                ((i, j), CellValue.MAYBE),
                             )
                 return pit_cells
             case _:
