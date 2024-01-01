@@ -1,7 +1,7 @@
 from collections import namedtuple
 from dataclasses import dataclass
 import enum
-from lib.game.board_data import BoardData, TileType
+from lib.game.board_data import BoardData, TileType, put_enviroment
 from lib.percepts import Percepts
 from test_map_generator import print_map_debug
 
@@ -156,26 +156,11 @@ class BoardModel:
             raise Exception("Cannot climb out: not at (0, 0)")
 
     def _remove_stench_around(self, x: int, y: int):
-        try:
-            if TileType.STENCH in self.board_data.board_data[y - 1][x]:
-                self.board_data.board_data[y - 1][x].remove(TileType.STENCH)
-        except IndexError:
-            pass
-        try:
-            if TileType.STENCH in self.board_data.board_data[y + 1][x]:
-                self.board_data.board_data[y + 1][x].remove(TileType.STENCH)
-        except IndexError:
-            pass
-        try:
-            if TileType.STENCH in self.board_data.board_data[y][x - 1]:
-                self.board_data.board_data[y][x - 1].remove(TileType.STENCH)
-        except IndexError:
-            pass
-        try:
-            if TileType.STENCH in self.board_data.board_data[y][x + 1]:
-                self.board_data.board_data[y][x + 1].remove(TileType.STENCH)
-        except IndexError:
-            pass
+        for i in range(0, self.board_data.width):
+            for j in range(0, self.board_data.height):
+                if TileType.STENCH in self.board_data.board_data[j][i]:
+                    self.board_data.board_data[j][i].remove(TileType.STENCH)
+        put_enviroment(self.board_data.board_data)
 
     def model_agent_position(self) -> Position:
         """
