@@ -7,13 +7,16 @@ from lib.game.map_generator import generate_map
 from lib.knowledge_base.knowledge_base import KnowledgeBase
 from rich import print
 
+from test_map_generator import print_map_debug
+
 TILE_SIZE = 64
 
 if __name__ == "__main__":
     pygame.init()
     board_data = read_board_data("tests/map2.txt")
-    map = generate_map(seed=539)
-    print(map)
+    map = generate_map(seed=540)
+    x, y = map.board_data.initial_agent_pos
+    print_map_debug(map.board_data.board_data, (y, x))
     board_data = map.board_data
     screen = pygame.display.set_mode()
     s_width, s_height = screen.get_size()
@@ -64,7 +67,7 @@ if __name__ == "__main__":
                 elif event.key == pygame.K_SPACE:
                     board_model.act(Action.MOVE)
                 elif event.key == pygame.K_RETURN:
-                    board_model.act(Action.SHOOT)
+                    text = board_model.act(Action.SHOOT)
                 elif event.key == pygame.K_r:
                     board_model.act(Action.CLIMB)
         board.update(dt)

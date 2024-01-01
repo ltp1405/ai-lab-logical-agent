@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import enum
 from lib.game.board_data import BoardData, TileType
 from lib.percepts import Percepts
+from test_map_generator import print_map_debug
 
 GOLD_POINTS = 100
 PIT_POINTS = -10000
@@ -138,11 +139,13 @@ class BoardModel:
                 percepts["bump"] = True
                 return percepts
         elif action == Action.SHOOT:
-            percepts = self.current_percepts
             hit = self._shoot()
+            self._update_percepts()
             if hit:
+                percepts = self.current_percepts
                 percepts["scream"] = True
-            return percepts
+                self.current_percepts = percepts
+            return self.current_percepts
 
         elif action == Action.CLIMB:
             if self._agent == Position(x=0, y=0):
@@ -202,18 +205,17 @@ class BoardModel:
                         self._remove_stench_around(self._agent.x, y)
                         return True
             case Direction.DOWN:
-                for y in range(self._agent.y - 1, 0, -1):
+                for y in range(self._agent.y - 1, -1, -1):
                     y = self.board_data.height - 1 - y
                     if TileType.WUMPUS in self.board_data.board_data[y][self._agent.x]:
                         self.board_data.board_data[y][self._agent.x].remove(
                             TileType.WUMPUS
                         )
-                        print("REMOVING WUMPUS")
                         self._remove_stench_around(self._agent.x, y)
                         return True
             case Direction.LEFT:
                 y = self.board_data.height - 1 - self._agent.y
-                for x in range(self._agent.x - 1, 0, -1):
+                for x in range(self._agent.x - 1, -1, -1):
                     if TileType.WUMPUS in self.board_data.board_data[y][x]:
                         self.board_data.board_data[y][x].remove(TileType.WUMPUS)
                         self._remove_stench_around(x, y)

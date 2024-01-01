@@ -78,7 +78,8 @@ class BoardModelWithKB(BoardModel):
         )
         # print (f"Points: {super().points}")
         # print(self.known_tiles)
-        return self.current_percepts
+        print(percepts)
+        return percepts
 
     def get_known_tiles(self) -> Dict[Tuple[int, int], Cell]:
         """
