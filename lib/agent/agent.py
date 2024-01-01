@@ -180,9 +180,10 @@ class Agent:
             self.board.change_agent_direction(direction)
             percepts = self.board.act(action)
             top, bottom, left, right = self.board.known_bounds()
-            if self.stack[-1] == to_room:
-                self.stack.pop()
-            self.stack.append(to_room)
+            if action == Action.MOVE:
+                if self.stack[-1] == to_room:
+                    self.stack.pop()
+                self.stack.append(to_room)
             print(f"Known bounds: {top}, {bottom}, {left}, {right}")
             if percepts["glitter"]:
                 self._find_gold = True
