@@ -46,3 +46,6 @@ if __name__ == "__main__":
         screen.blit(text_rect, (0, 0))
         pygame.display.update()
     print(board_data)
+    print(f"Agent visited {len(visited_rooms)} rooms")
+    game_result = "WON" if board_model.points > 0 else "LOST"
+    print(f"Game result: {game_result}")

@@ -18,6 +18,7 @@ Clause = Tuple[int, int, str, CellValue]
 class Decision(Enum):
     EXIT = 1
     CONTINUE = 2
+    BACKTRACK = 3
 
 
 class Agent:
@@ -112,11 +113,11 @@ class Agent:
         return None
 
     def backtrack(self) -> Tuple[int, int] | None:
-        # Pop the stack of the agent, then return the last room in the stack
-        self.stack.pop()
-        if len(self.stack) == 0:
-            return None
-        return self.stack[-1]
+        # Pop the current room off the stack if len(stack) > 1
+        if len(self.stack) > 1:
+            self.stack.pop()
+            return self.stack[-1]
+        return None
 
     def latest_room(self) -> Tuple[int, int] | None:
         if len(self.stack) == 0:
@@ -147,23 +148,19 @@ class Agent:
     def random_select_room(self, rooms: List[Tuple[int, int]]) -> Tuple[int, int]:
         return random.choice(rooms)
 
-    def decide_game_state(self) -> Decision:
-        # decision_array = [Decision.CONTINUE for _ in range(len(self.wumpus_rooms()))]
-        # decision_array.append(Decision.EXIT)
-        decision_array = [
-            Decision.CONTINUE,
-            Decision.EXIT,
-            Decision.CONTINUE,
-            Decision.CONTINUE,
-        ]
+    def dangerously_chose(self) -> Decision:
+        pit_cells = self.pit_rooms(target=CellValue.MAYBE)
+        if len(pit_cells) > 0 and len(self.stack) <= 1:
+            return Decision.CONTINUE
+        decision_array = [Decision.CONTINUE] * len(pit_cells)
+        decision_array.extend([Decision.EXIT] * random.randint(1, len(pit_cells) + 1))
         return random.choice(decision_array)
 
-    def decide_action(self) -> Action:
-        # Check if wumpus_cells is not empty
+    def decide(self) -> Action:
         wumpus_cells = self.wumpus_rooms()
-        if len(wumpus_cells) == 0:
-            return Action.MOVE
-        return random.choice([Action.MOVE, Action.SHOOT])
+        decision_array = [Decision.CONTINUE] * len(wumpus_cells)
+        decision_array.extend([Decision.BACKTRACK] * random.randint(1, len(wumpus_cells) + 1))
+        return random.choice(decision_array)
 
     def take_action(
         self,
