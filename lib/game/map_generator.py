@@ -42,19 +42,22 @@ def _put_tiles(
     current_wumpus_count = 0
     current_pit_count = 0
     current_gold_count = 0
+
+    def empty(x, y):
+        return (
+            TileType.WUMPUS not in map[y][x]
+            and TileType.PIT not in map[y][x]
+            and TileType.GOLD not in map[y][x]
+        )
+
     while True:
         choice = random.randint(0, 2)
         if current_wumpus_count < wumpus_count and choice == 0:
             while True:
                 x = random.randint(0, len(map[0]) - 1)
                 y = random.randint(0, len(map) - 1)
-                if (
-                    TileType.WUMPUS not in map[y][x]
-                    and TileType.PIT not in map[y][x]
-                    and not (
-                        x != initial_agent_position[0]
-                        and y != initial_agent_position[1]
-                    )
+                if empty(x, y) and not (
+                    x != initial_agent_position[0] and y != initial_agent_position[1]
                 ):
                     map[y][x].add(TileType.WUMPUS)
                     current_wumpus_count += 1
@@ -63,13 +66,8 @@ def _put_tiles(
             while True:
                 x = random.randint(0, len(map[0]) - 1)
                 y = random.randint(0, len(map) - 1)
-                if (
-                    TileType.PIT not in map[y][x]
-                    and TileType.WUMPUS not in map[y][x]
-                    and not (
-                        x == initial_agent_position[0]
-                        and y != initial_agent_position[1]
-                    )
+                if empty(x, y) and not (
+                    x == initial_agent_position[0] and y != initial_agent_position[1]
                 ):
                     map[y][x].add(TileType.PIT)
                     if (
@@ -86,11 +84,7 @@ def _put_tiles(
             while True:
                 x = random.randint(0, len(map[0]) - 1)
                 y = random.randint(0, len(map) - 1)
-                if (
-                    TileType.GOLD not in map[y][x]
-                    and TileType.WUMPUS not in map[y][x]
-                    and TileType.PIT not in map[y][x]
-                ) and (
+                if empty(x, y) and (
                     x != initial_agent_position[0] and y != initial_agent_position[1]
                 ):
                     map[y][x].add(TileType.GOLD)
@@ -134,6 +128,7 @@ def generate_map(
             random.randint(0, map_size[0] - 1),
             random.randint(0, map_size[1] - 1),
         )
+    print(initial_agent_position)
 
     _put_tiles(
         map,
@@ -142,7 +137,6 @@ def generate_map(
         gold_count,
         initial_agent_position,
     )
-
     random.setstate(previous_seed)
 
     Result = namedtuple(
@@ -160,8 +154,8 @@ def generate_map(
         width=len(map[0]),
         board_data=map,
         initial_agent_pos=(
+            initial_agent_position[1],
             initial_agent_position[0],
-            map_size[1] - initial_agent_position[1] - 1,
         ),
     )
     return Result(
