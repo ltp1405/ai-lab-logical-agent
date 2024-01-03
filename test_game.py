@@ -14,6 +14,7 @@ TILE_SIZE = 64
 if __name__ == "__main__":
     pygame.init()
     board_data = read_board_data("tests/map2.txt")
+<<<<<<< Updated upstream
     map = generate_map(
         seed=500,
         initial_agent_position=(2, 3),
@@ -21,6 +22,9 @@ if __name__ == "__main__":
         pit_count=2,
         gold_count=4,
     )
+=======
+    map = generate_map(seed=512)
+>>>>>>> Stashed changes
     x, y = map.board_data.initial_agent_pos
     print_map_debug(map.board_data.board_data, (y, x))
     board_data = map.board_data
