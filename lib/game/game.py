@@ -10,19 +10,32 @@ from lib.knowledge_base.knowledge_base import KnowledgeBase
 from rich import print
 from typing import Dict, Tuple
 
+from test_map_generator import print_map_debug
+
 TILE_SIZE = 64
 
 
 def run(
     map_path: str | None = None,
     seed: int | None = 500,
+    wumpus_count: int | None = None,
+    pit_count: int | None = None,
+    gold_count: int | None = None,
+    initial_agent_pos: Tuple[int, int] | None = None,
 ) -> Tuple[str, int]:
     pygame.init()
-    map = generate_map(seed=seed)
-    print(map)
+    map = generate_map(
+        seed=seed,
+        wumpus_count=wumpus_count,
+        pit_count=pit_count,
+        gold_count=gold_count,
+        initial_agent_position=initial_agent_pos,
+    )
     board_data = map.board_data
     if map_path is not None:
         board_data = read_board_data(map_path)
+    x, y = board_data.initial_agent_pos
+    print_map_debug(board_data.board_data, (y, x))
     screen = pygame.display.set_mode()
     s_width, s_height = screen.get_size()
     middle = s_width // 2, s_height // 2
@@ -76,6 +89,10 @@ def run(
 def summary(
     times: int = 10,
     seed: int = 500,
+    wumpus_count: int = 1,
+    pit_count: int = 2,
+    gold_count: int = 1,
+    initial_agent_pos: Tuple[int, int] | None = None,
     file: str | None = None,
 ) -> Dict[int, Tuple[str, int]]:
     """Run the simulation multiple times and return the summary of the results.
@@ -92,6 +109,10 @@ def summary(
         game_result = run(
             seed=seed,
             map_path=file,
+            wumpus_count=wumpus_count,
+            pit_count=pit_count,
+            gold_count=gold_count,
+            initial_agent_pos=initial_agent_pos,
         )
         result[i + 1] = game_result
     return result

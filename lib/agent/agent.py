@@ -60,7 +60,7 @@ class Agent:
         if find_all:
             return safe_cells
         adjacent_rooms = self._adjacent_rooms()
-        return list(filter(lambda x: x in adjacent_rooms, safe_cells))
+        return [room for room in safe_cells if room in adjacent_rooms]
 
     def wumpus_rooms(
         self,
@@ -135,7 +135,7 @@ class Agent:
             res.add((x, y - 1))
         _, bottom, left, _ = self.board.known_bounds()
         if bottom is not None and left is not None:
-            if (left, bottom - 1) in res and self.stack is not AgentState.TRY_TO_EXIT:
+            if (left, bottom - 1) in res and self.state is not AgentState.TRY_TO_EXIT:
                 res.remove((left, bottom - 1))
         return res
 

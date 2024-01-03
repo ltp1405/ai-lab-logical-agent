@@ -7,45 +7,9 @@ from lib.game.board_model import Action, Direction
 from lib.game.board_with_kb import BoardModelWithKB
 from lib.knowledge_base.cell import CellValue
 
-from lib.knowledge_base.knowledge_base import KnowledgeBase
-
 from rich import print
 
 from lib.percepts import Percepts
-
-
-### PLANNING PHASE ###
-# Step 1: Get the safe rooms, wumpus rooms, pit rooms
-# Step 2: If the agent is in the exit room, then
-#   the agent should take the action CLIMB to (left, bottom)
-# Step 3: Initialize prioritzed_direction: Set[Direction] = {Direction.RIGHT, Direction.UP}
-# Step 4: Do the following guidelines:
-#   - If all safe rooms are visited, then go to step 5 (All safe rooms are visited if len(all_safe_rooms) == len(visited_rooms))
-#   - If there is no safe room adjacent to the agent, then:
-#       - The agent now should decide to either move back to the previous room or go to step 5
-#       ** If the agent decides to move back to the previous room**
-#       - Calling backtrack() to remove, then receive the result of the function call
-#       - If the result is None, then the agent is in the initial room, then go to step 5
-#         Else:
-#            - Get the last room in the stack
-#            - Add the current room to the visited_rooms
-#            - Take_action MOVE to that the previous room, then go to step 6
-#   - Else:
-#       - Select a safe room which is not visited yet, then take_action MOVE to that room
-# Step 5:
-#   - If there are some rooms that may contain wumpus, then:
-#       - Either select a room that has a wumpus or randomly choose a room
-#         that may contain wumpus, then take_action SHOOT to that room, then go to step 6
-#   - If there are some rooms that may contain pit, then:
-#       - Randomly choose a room, then take_action MOVE to that room, then go to step 6
-#   - If the agent is trying to find the gold, then:
-#       - Decide to backtrack to the previous room or go to step 6
-# Step 6: Add the rooms that the agent has visited to the list visited_rooms,
-#         then return the tuple (percepts, visited_rooms), where percepts is the percepts
-#         of the action that the agent has taken
-### END OF PLANNING PHASE ###
-
-### EXECUTION PHASE ###
 
 
 def simulation(
@@ -77,8 +41,10 @@ def simulation(
     if (
         set(all_safe_rooms).issubset(c_visited_rooms)
         and agent.state != AgentState.TRY_TO_EXIT
+        and percepts["stench"] is None 
     ):
         print("All safe rooms are visited")
+        print(f"Visited rooms: {c_visited_rooms}")
         return _restart_to_exit(agent, c_visited_rooms)
     else:
         room = _select_room(
@@ -252,18 +218,3 @@ def _restart_to_exit(
     agent.state = AgentState.TRY_TO_EXIT
     return (agent.board.current_percepts, {current_room})
 
-
-# def _decide_to_exit(
-#     agent: Agent, visited_rooms: Set[Tuple[int, int]]
-# ) -> Tuple[Percepts, Set[Tuple[int, int]]]:
-#     c_visited_rooms = deepcopy(visited_rooms)
-#     safe_rooms = agent.safe_rooms()
-#     agent.set_exit(True)
-#     c_visited_rooms.clear()
-#     current_room = agent.latest_room()
-#     agent.stack.clear()
-#     if len(safe_rooms) > 0:
-#         agent.stack.append(current_room)
-#     c_visited_rooms.add(current_room)
-#     print(f"Agent decides to exit. Start exiting phase at cell {current_room}")
-#     return (agent.board.current_percepts, c_visited_rooms)
