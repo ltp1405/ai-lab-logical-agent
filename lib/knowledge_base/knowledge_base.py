@@ -24,12 +24,16 @@ class KnowledgeBase:
                 for i in range(-11, 10):
                     for j in range(-11, 10):
                         if self.world[(i, j)].is_safe:
+                            if self.check_oob(i, j):
+                                continue
                             safe_cells.append((i, j))
                 return safe_cells
             case "wumpus_cells":
                 wumpus_cells: List[Tuple[Tuple[int, int], CellValue]] = []
                 for i in range(-11, 10):
                     for j in range(-11, 10):
+                        if self.check_oob(i, j):
+                            continue
                         if self.world[(i, j)].is_wumpus == CellValue.TRUE:
                             wumpus_cells.insert(
                                 0,
@@ -45,6 +49,8 @@ class KnowledgeBase:
                 pit_cells: List[Tuple[Tuple[int, int], CellValue]] = []
                 for i in range(-11, 10):
                     for j in range(-11, 10):
+                        if self.check_oob(i, j):
+                            continue
                         if self.world[(i, j)].is_pit == CellValue.TRUE:
                             pit_cells.insert(
                                 0,
@@ -139,3 +145,14 @@ class KnowledgeBase:
 
     def ask(self, x: int, y: int, attribute: str) -> CellValue:
         return getattr(self.world[(x, y)], attribute)
+
+    def check_oob(self, x: int, y: int) -> bool:
+        if self.top != None and y > self.top:
+            return True
+        if self.right != None and x > self.right:
+            return True
+        if self.bottom != None and y < self.bottom:
+            return True
+        if self.left != None and x < self.left:
+            return True
+        return False
