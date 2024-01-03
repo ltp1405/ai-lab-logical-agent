@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
 
+from lib.coord import CartesianCoord, DownwardCoord
+
 
 class TileType(Enum):
     WUMPUS = 1
@@ -31,7 +33,7 @@ class BoardData:
     height: int
     width: int
     board_data: list[list[set[TileType]]]
-    initial_agent_pos: tuple[int, int]
+    initial_agent_pos: DownwardCoord
 
 
 def read_board_data(filename):
@@ -65,7 +67,7 @@ def read_board_data(filename):
         if height > 10 or width > 10:
             raise ValueError("Map too big")
 
-        agent_pos = (agent_pos[0], agent_pos[1])
+        agent_pos = DownwardCoord(agent_pos[0], agent_pos[1])
         put_enviroment(board_data)
         print(board_data)
         return BoardData(height, width, board_data, agent_pos)

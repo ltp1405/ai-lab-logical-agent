@@ -4,6 +4,7 @@ from rich import print
 if __name__ == "__main__":
     times = 10
     result = summary(
+        seed=502,
         times=times,
         initial_agent_pos=(2, 3),
         wumpus_count=5,
