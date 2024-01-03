@@ -19,6 +19,12 @@ class Decision(Enum):
     EXIT = 1
     CONTINUE = 2
     BACKTRACK = 3
+    RESTART = 4
+
+
+class AgentState(Enum):
+    FIND_GOLD = 1
+    TRY_TO_EXIT = 2
 
 
 class Agent:
@@ -27,21 +33,9 @@ class Agent:
         board: BoardModelWithKB,
     ) -> None:
         self.board = board
-        self.find_gold = False
-        self.exit = False
+        self.golds = 0
+        self.state = AgentState.FIND_GOLD
         self.stack: List[Tuple[int, int]] = [(0, 0)]
-
-    def exiting(self) -> bool:
-        return self.exit
-
-    def found_gold(self) -> bool:
-        return self.find_gold
-
-    def set_find_gold(self, value: bool) -> None:
-        self.find_gold = value
-
-    def set_exit(self, value: bool) -> None:
-        self.exit = value
 
     def identify_direction(self, room: Tuple[int, int]) -> Direction:
         x, y = (
@@ -141,26 +135,25 @@ class Agent:
             res.add((x, y - 1))
         _, bottom, left, _ = self.board.known_bounds()
         if bottom is not None and left is not None:
-            if (left, bottom - 1) in res and not self._find_gold:
+            if (left, bottom - 1) in res and self.stack is not AgentState.TRY_TO_EXIT:
                 res.remove((left, bottom - 1))
         return res
 
     def random_select_room(self, rooms: List[Tuple[int, int]]) -> Tuple[int, int]:
-        return random.choice(rooms)
-
-    def dangerously_chose(self) -> Decision:
-        pit_cells = self.pit_rooms(target=CellValue.MAYBE)
-        if len(pit_cells) > 0 and len(self.stack) <= 1:
-            return Decision.CONTINUE
-        decision_array = [Decision.CONTINUE] * len(pit_cells)
-        decision_array.extend([Decision.EXIT] * random.randint(1, len(pit_cells) + 1))
-        return random.choice(decision_array)
-
-    def decide(self) -> Action:
-        wumpus_cells = self.wumpus_rooms()
-        decision_array = [Decision.CONTINUE] * len(wumpus_cells)
-        decision_array.extend([Decision.BACKTRACK] * random.randint(1, len(wumpus_cells) + 1))
-        return random.choice(decision_array)
+        if len(rooms) == 1:
+            return rooms[0]
+        if self.state == AgentState.TRY_TO_EXIT:
+            # Prioritize the exit room: going DOWN, LEFT
+            filtered_rooms = [room for room in rooms if self.identify_direction(room) in (Direction.DOWN, Direction.LEFT)]
+            if len(filtered_rooms) > 0:
+                return random.choice(filtered_rooms)
+        room = random.choice(rooms)
+        while (
+            self.state == AgentState.FIND_GOLD
+            and self.identify_direction(room) == Direction.DOWN
+        ):
+            room = random.choice(rooms)
+        return room
 
     def take_action(
         self,
@@ -175,21 +168,17 @@ class Agent:
         Returns:
             bool: Whether the agent is still alive
         """
-        try:
-            direction = self.board.identify_direction_to_modify(to_room)
-            self.board.change_agent_direction(direction)
-            percepts = self.board.act(action)
-            top, bottom, left, right = self.board.known_bounds()
-            if action == Action.MOVE:
-                if self.stack[-1] == to_room:
-                    self.stack.pop()
-                self.stack.append(to_room)
-            print(f"Known bounds: {top}, {bottom}, {left}, {right}")
-            if percepts["glitter"]:
-                self._find_gold = True
-            # Check the current percepts to see if the agent is still alive
-            self._is_alive = not self.board.game_over
-            return percepts
-        except Exception as e:
-            if e.args[0].startswith("Cannot climb out"):
-                return self.board.current_percepts
+        direction = self.board.identify_direction_to_modify(to_room)
+        self.board.change_agent_direction(direction)
+        percepts = self.board.act(action)
+        top, bottom, left, right = self.board.known_bounds()
+        if action == Action.MOVE:
+            if self.stack[-1] == to_room:
+                self.stack.pop()
+            self.stack.append(to_room)
+        print(f"Known bounds: {top}, {bottom}, {left}, {right}")
+        if percepts["glitter"]:
+            self.golds += 1
+        # Check the current percepts to see if the agent is still alive
+        self._is_alive = not self.board.game_over
+        return percepts

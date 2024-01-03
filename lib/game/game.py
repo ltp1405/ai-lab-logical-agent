@@ -1,9 +1,9 @@
 import pygame
-from lib.agent.agent import Agent
+from lib.agent.agent import Agent, AgentState
 from lib.agent.algorithms import simulation
 from lib.game.board import Board, Direction
 from lib.game.board_data import BoardData, read_board_data
-from lib.game.board_model import Action, BoardModel
+from lib.game.board_model import Action, BoardModel, GameState
 from lib.game.board_with_kb import BoardModelWithKB
 from lib.game.map_generator import generate_map
 from lib.knowledge_base.knowledge_base import KnowledgeBase
@@ -44,20 +44,22 @@ def run(
             dt = clock.tick(60) / 1000
             text, new_visited = simulation(agent, visited_rooms)
             board.update(dt)
-            visited_rooms.update(new_visited)
-            if board_model.game_over:
+            visited_rooms = new_visited
+            if board_model.game_over == GameState.WON or board_model.game_over == GameState.LOST:
                 running = False
             screen.fill((0, 0, 0))
             board.draw(screen)
             text_rect = font.render(f"{text}", True, (255, 255, 255))
             screen.blit(text_rect, (0, 0))
             pygame.display.update()
+            print(f"All safe rooms length: {len(set(agent.safe_rooms(find_all=True)))}")
     except Exception as e:
-       board_model.game_over = True
+        board_model.game_over = GameState.LOST
     print(board_data)
     print(f"Agent visited {len(visited_rooms)} rooms")
-    game_result = "WON" if board_model.points > 0 else "LOST"
+    game_result = "WON" if agent.board.game_over == GameState.WON else "LOST"
     print(f"Game result: {game_result}")
+    print(f"Agent picks {agent.golds} golds")
     return (game_result, board_model.points)
 
 

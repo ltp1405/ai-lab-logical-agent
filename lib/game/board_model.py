@@ -24,6 +24,11 @@ class Action(enum.Enum):
     MOVE = 1
     SHOOT = 2
     CLIMB = 3
+    
+class GameState(enum.Enum):
+    PLAYING = 1
+    WON = 2
+    LOST = 3
 
 
 @dataclass
@@ -49,7 +54,7 @@ class BoardModel:
         )
         self.agent_direction = Direction.RIGHT
         self.points = 0
-        self.game_over = False
+        self.game_over = GameState.PLAYING
         self.current_percepts = Percepts()
         self._update_percepts()
         self.revealed[self._agent.y][self._agent.x] = True
@@ -83,7 +88,7 @@ class BoardModel:
         - None if the agent cannot perceive that tile (out of bounds)
         - [] if the agent can perceive that tile but there is nothing there
         """
-        if self.game_over:
+        if self.game_over == GameState.WON or self.game_over == GameState.LOST:
             raise Exception(f"Game is over: {self.points} points")
         if action == Action.MOVE:
             y, x = self._agent.y, self._agent.x
@@ -92,7 +97,7 @@ class BoardModel:
                 and self.agent_direction == Direction.DOWN
             ):
                 self.points += CLIMB_OUT_POINTS
-                self.game_over = True
+                self.game_over = GameState.WON
                 print(f"Points: {self.points}")
                 return self.current_percepts
             if self.agent_direction == Direction.UP:
@@ -120,11 +125,11 @@ class BoardModel:
                         remove_gold = True
                     elif tile == TileType.PIT:
                         self.points += PIT_POINTS
-                        self.game_over = True
+                        self.game_over = GameState.LOST
                         print(f"Points: {self.points}")
                     elif tile == TileType.WUMPUS:
                         self.points += WUMPUS_POINTS
-                        self.game_over = True
+                        self.game_over = GameState.LOST
                         print(f"Points: {self.points}")
                     elif tile == TileType.BREEZE:
                         percepts["breeze"] = True
@@ -150,7 +155,7 @@ class BoardModel:
         elif action == Action.CLIMB:
             if self._agent == Position(x=0, y=0):
                 self.points += CLIMB_OUT_POINTS
-                self.game_over = True
+                self.game_over = GameState.WON
                 print(f"Points: {self.points}")
                 return self.current_percepts
             raise Exception("Cannot climb out: not at (0, 0)")

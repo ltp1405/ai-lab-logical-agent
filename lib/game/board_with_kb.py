@@ -54,6 +54,8 @@ class BoardModelWithKB(BoardModel):
         
     def identify_direction_to_modify(self, to_room: Tuple[int, int]) -> Direction:
         x, y = self.virtual_agent_position().x, self.virtual_agent_position().y
+        if to_room == (x, y):
+            return self.agent_direction
         if to_room == (x + 1, y):
             return Direction.RIGHT
         elif to_room == (x - 1, y):

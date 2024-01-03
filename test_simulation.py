@@ -37,7 +37,7 @@ if __name__ == "__main__":
         dt = clock.tick(60) / 1000
         text, new_visited = simulation(agent, visited_rooms)   
         board.update(dt)
-        visited_rooms.update(new_visited)
+        visited_rooms = new_visited
         if board_model.game_over:
             running = False
         screen.fill((0, 0, 0))
@@ -45,7 +45,8 @@ if __name__ == "__main__":
         text_rect = font.render(f"{text}", True, (255, 255, 255))
         screen.blit(text_rect, (0, 0))
         pygame.display.update()
+        print (f"All safe rooms length: {len(set(agent.safe_rooms(find_all=True)))}")
     print(board_data)
     print(f"Agent visited {len(visited_rooms)} rooms")
-    game_result = "WON" if board_model.points > 0 else "LOST"
+    game_result = "WON" if agent.exit else "LOST"
     print(f"Game result: {game_result}")
