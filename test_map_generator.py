@@ -29,7 +29,7 @@ def main():
         gold_count=None,
         seed=5,
     )
-    print_map_debug(map.map, map.initial_agent_position)
+    print_map_debug(map.board_data, map.board_data.initial_agent_pos)
 
 
 if __name__ == "__main__":

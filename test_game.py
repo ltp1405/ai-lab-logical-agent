@@ -1,4 +1,5 @@
 import pygame
+from lib.coord import DownwardCoord
 from lib.game.board import Board, Direction
 from lib.game.board_data import BoardData, read_board_data
 from lib.game.board_model import Action, BoardModel, GameState
@@ -16,7 +17,7 @@ if __name__ == "__main__":
     board_data = read_board_data("tests/map2.txt")
     map = generate_map(
         seed=500,
-        initial_agent_position=(2, 3),
+        initial_agent_position=DownwardCoord(2, 3),
         wumpus_count=1,
         pit_count=2,
         gold_count=4,

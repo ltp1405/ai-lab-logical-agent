@@ -70,7 +70,7 @@ def _put_tiles(
                     map[y][x].add(TileType.PIT)
                     if (
                         _check_have_path_to_exit(
-                            map, initial_agent_position[0], initial_agent_position[1]
+                            map, initial_agent_position.x, initial_agent_position.y
                         )
                         == False
                     ):
@@ -152,8 +152,8 @@ def generate_map(
         width=len(map[0]),
         board_data=map,
         initial_agent_pos=DownwardCoord(
-            initial_agent_position[0],
-            initial_agent_position[1]
+            initial_agent_position.x,
+            initial_agent_position.y,
         ),
     )
     return Result(

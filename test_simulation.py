@@ -21,8 +21,8 @@ if __name__ == "__main__":
     s_width, s_height = screen.get_size()
     middle = s_width // 2, s_height // 2
     board_x, board_y = (
-        middle[0] - (board_data.initial_agent_pos[1] + 1) * TILE_SIZE,
-        middle[1] - (board_data.initial_agent_pos[0] + 1) * TILE_SIZE,
+        middle[0] - (board_data.initial_agent_pos.x + 1) * TILE_SIZE,
+        middle[1] - (board_data.initial_agent_pos.y + 1) * TILE_SIZE,
     )
     kb = KnowledgeBase()
     board_model = BoardModelWithKB(board_data, kb)
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     text = board.model.current_percepts
     while running:
         dt = clock.tick(60) / 1000
-        text, new_visited = simulation(agent, visited_rooms)   
+        text, new_visited = simulation(agent, visited_rooms)
         board.update(dt)
         visited_rooms = new_visited
         if board_model.game_over:
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         text_rect = font.render(f"{text}", True, (255, 255, 255))
         screen.blit(text_rect, (0, 0))
         pygame.display.update()
-        print (f"All safe rooms length: {len(set(agent.safe_rooms(find_all=True)))}")
+        print(f"All safe rooms length: {len(set(agent.safe_rooms(find_all=True)))}")
     print(board_data)
     print(f"Agent visited {len(visited_rooms)} rooms")
     game_result = "WON" if agent.exit else "LOST"

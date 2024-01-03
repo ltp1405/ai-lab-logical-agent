@@ -1,3 +1,4 @@
+from lib.coord import DownwardCoord
 from lib.game.game import summary
 from rich import print
 
@@ -6,7 +7,7 @@ if __name__ == "__main__":
     result = summary(
         seed=502,
         times=times,
-        initial_agent_pos=(2, 3),
+        initial_agent_pos=DownwardCoord(2, 3),
         wumpus_count=5,
         pit_count=5,
         gold_count=10,
