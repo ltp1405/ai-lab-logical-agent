@@ -24,11 +24,14 @@ class Action(enum.Enum):
     MOVE = 1
     SHOOT = 2
     CLIMB = 3
-    
+
+
 class GameState(enum.Enum):
     PLAYING = 1
     WON = 2
-    LOST = 3
+    LOST_WUMPUS = 3
+    LOST_PIT = 4
+    LOST_UNKNOWN = 5
 
 
 @dataclass
@@ -88,7 +91,11 @@ class BoardModel:
         - None if the agent cannot perceive that tile (out of bounds)
         - [] if the agent can perceive that tile but there is nothing there
         """
-        if self.game_over == GameState.WON or self.game_over == GameState.LOST:
+        if (
+            self.game_over == GameState.WON
+            or self.game_over == GameState.LOST_PIT
+            or self.game_over == GameState.LOST_WUMPUS
+        ):
             raise Exception(f"Game is over: {self.points} points")
         if action == Action.MOVE:
             y, x = self._agent.y, self._agent.x
@@ -125,11 +132,11 @@ class BoardModel:
                         remove_gold = True
                     elif tile == TileType.PIT:
                         self.points += PIT_POINTS
-                        self.game_over = GameState.LOST
+                        self.game_over = GameState.LOST_PIT
                         print(f"Points: {self.points}")
                     elif tile == TileType.WUMPUS:
                         self.points += WUMPUS_POINTS
-                        self.game_over = GameState.LOST
+                        self.game_over = GameState.LOST_WUMPUS
                         print(f"Points: {self.points}")
                     elif tile == TileType.BREEZE:
                         percepts["breeze"] = True

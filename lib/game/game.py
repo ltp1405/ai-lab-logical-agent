@@ -45,19 +45,29 @@ def run(
             text, new_visited = simulation(agent, visited_rooms)
             board.update(dt)
             visited_rooms = new_visited
-            if board_model.game_over == GameState.WON or board_model.game_over == GameState.LOST:
+            if (
+                board_model.game_over == GameState.WON
+                or board_model.game_over == GameState.LOST_WUMPUS
+                or board_model.game_over == GameState.LOST_PIT
+            ):
                 running = False
             screen.fill((0, 0, 0))
             board.draw(screen)
             text_rect = font.render(f"{text}", True, (255, 255, 255))
             screen.blit(text_rect, (0, 0))
             pygame.display.update()
-            print(f"All safe rooms length: {len(set(agent.safe_rooms(find_all=True)))}")
     except Exception as e:
-        board_model.game_over = GameState.LOST
+        board_model.game_over = GameState.LOST_UNKNOWN
     print(board_data)
-    print(f"Agent visited {len(visited_rooms)} rooms")
-    game_result = "WON" if agent.board.game_over == GameState.WON else "LOST"
+    game_result = (
+        "WON"
+        if agent.board.game_over == GameState.WON
+        else "EATEN BY WUMPUS"
+        if agent.board.game_over == GameState.LOST_WUMPUS
+        else "FELL INTO PIT"
+        if agent.board.game_over == GameState.LOST_PIT
+        else "LOST BY UNKNOWN REASON"
+    )
     print(f"Game result: {game_result}")
     print(f"Agent picks {agent.golds} golds")
     return (game_result, board_model.points)

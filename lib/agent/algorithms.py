@@ -74,7 +74,6 @@ def simulation(
     print(f"Agent stack: {agent.stack}")
     print(f"Safe rooms has {len(safe_rooms)} rooms: {safe_rooms}")
     print(f"All safe rooms has {len(set(all_safe_rooms))} rooms")
-    print(f"Visited rooms has {len(c_visited_rooms)} rooms: {c_visited_rooms}")
     if (
         set(all_safe_rooms).issubset(c_visited_rooms)
         and agent.state != AgentState.TRY_TO_EXIT
@@ -82,23 +81,19 @@ def simulation(
         print("All safe rooms are visited")
         return _restart_to_exit(agent, c_visited_rooms)
     else:
-        print("Checkpoint 1")
         room = _select_room(
             agent,
             visited_rooms,
             safe_rooms,
         )
         if room is None:
-            print("Checkpoint 2")
             result = _agent_make_desicion(
                 agent,
                 c_visited_rooms=c_visited_rooms,
             )
             percepts, new_visited_rooms = result
-            print(f"Result: {result}")
             c_visited_rooms = new_visited_rooms
         else:
-            print("Checkpoint 3")
             percepts = agent.take_action(Action.MOVE, room)
             if percepts["glitter"]:
                 print(f"FIND GOLD at room: {room}")
@@ -108,7 +103,6 @@ def simulation(
             else:
                 agent.backtrack()  # Remove the wall from the stack
                 print(f"Bumped into the wall at {room}")
-    print(f"Visited rooms: {c_visited_rooms}")
     return (percepts, c_visited_rooms)
 
 
@@ -133,7 +127,7 @@ def _select_room(
     not_visited_rooms = [room for room in safe_rooms if room not in visited_rooms]
     if not not_visited_rooms:
         return None
-    print(f"Not visited rooms: {not_visited_rooms}")
+    print(f"There are {len(not_visited_rooms)} rooms that are not visited yet: {not_visited_rooms}")
     room = agent.random_select_room(not_visited_rooms)
     return room
 
@@ -212,19 +206,18 @@ def _find_wumpus_and_shoot_arrow(
         Percepts | None: Percepts of the function call agent.take_action if there is a room
     """
     rooms: List[Tuple[int, int]] = agent.wumpus_rooms(target=CellValue.TRUE)
-    pit_rooms: List[Tuple[int, int]] = agent.pit_rooms(target=CellValue.MAYBE)
+    pit_rooms: List[Tuple[int, int]] = agent.pit_rooms()
     if len(rooms) == 0:
-        # If there is no room that has a wumpus, then randomly choose a room
-        # that may contain wumpus
         rooms = agent.wumpus_rooms(target=CellValue.MAYBE)
     rooms = [room for room in rooms if room not in pit_rooms]
     if len(rooms) == 0:
         return None
     choice = agent.random_select_room(rooms)
-    print(f"Shoot arrow to room: {choice}")
     percepts = agent.take_action(Action.SHOOT, choice)
     if not percepts["scream"]:
-        print("Shoot arrow but no scream perceived")
+        print(f"Shoot arrow to room: {choice} and hear nothing")
+    else:
+        print(f"Shoot arrow to room: {choice} and hear the scream")
     return percepts
 
 
