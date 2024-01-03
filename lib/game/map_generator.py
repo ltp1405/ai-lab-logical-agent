@@ -2,9 +2,7 @@ from collections import namedtuple
 import random
 from typing import Tuple
 from rich import print
-from rich.box import Box
-from rich.table import Table, box
-from rich.panel import Panel
+from lib.coord import DownwardCoord
 
 from lib.game.board_data import BoardData, TileType, put_enviroment
 
@@ -37,7 +35,7 @@ def _put_tiles(
     wumpus_count: int,
     pit_count: int,
     gold_count: int,
-    initial_agent_position: Tuple[int, int],
+    initial_agent_position: DownwardCoord,
 ):
     current_wumpus_count = 0
     current_pit_count = 0
@@ -100,7 +98,7 @@ def _put_tiles(
 
 def generate_map(
     map_size: Tuple[int, int] | None = None,
-    initial_agent_position: Tuple[int, int] | None = None,
+    initial_agent_position: DownwardCoord | None = None,
     wumpus_count: None | int = None,
     pit_count: None | int = None,
     gold_count: None | int = None,
@@ -124,7 +122,7 @@ def generate_map(
         gold_count = random.randint(1, int(map_size[0] * map_size[1] / 5))
 
     if initial_agent_position is None:
-        initial_agent_position = (
+        initial_agent_position = DownwardCoord(
             random.randint(0, map_size[0] - 1),
             random.randint(0, map_size[1] - 1),
         )
@@ -153,9 +151,9 @@ def generate_map(
         height=len(map),
         width=len(map[0]),
         board_data=map,
-        initial_agent_pos=(
-            initial_agent_position[1],
+        initial_agent_pos=DownwardCoord(
             initial_agent_position[0],
+            initial_agent_position[1]
         ),
     )
     return Result(

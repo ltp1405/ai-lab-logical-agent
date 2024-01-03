@@ -67,10 +67,8 @@ def read_board_data(filename):
         if height > 10 or width > 10:
             raise ValueError("Map too big")
 
-        agent_pos = DownwardCoord(agent_pos[0], agent_pos[1])
         put_enviroment(board_data)
-        print(board_data)
-        return BoardData(height, width, board_data, agent_pos)
+        return BoardData(height, width, board_data, DownwardCoord(agent_pos[0], agent_pos[1]))
 
 
 def put_enviroment(board_data):

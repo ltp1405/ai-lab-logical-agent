@@ -1,6 +1,7 @@
 import pygame
 from lib.agent.agent import Agent, AgentState
 from lib.agent.algorithms import simulation
+from lib.coord import DownwardCoord
 from lib.game.board import Board, Direction
 from lib.game.board_data import BoardData, read_board_data
 from lib.game.board_model import Action, BoardModel, GameState
@@ -17,11 +18,11 @@ TILE_SIZE = 64
 
 def run(
     map_path: str | None = None,
-    seed: int | None = 500,
+    seed: int = 500,
     wumpus_count: int | None = None,
     pit_count: int | None = None,
     gold_count: int | None = None,
-    initial_agent_pos: Tuple[int, int] | None = None,
+    initial_agent_pos: DownwardCoord | None = None,
 ) -> Tuple[str, int]:
     pygame.init()
     map = generate_map(
@@ -40,8 +41,8 @@ def run(
     s_width, s_height = screen.get_size()
     middle = s_width // 2, s_height // 2
     board_x, board_y = (
-        middle[0] - (board_data.initial_agent_pos[1] + 1) * TILE_SIZE,
-        middle[1] - (board_data.initial_agent_pos[0] + 1) * TILE_SIZE,
+        middle[0] - (board_data.initial_agent_pos.x + 1) * TILE_SIZE,
+        middle[1] - (board_data.initial_agent_pos.y + 1) * TILE_SIZE,
     )
     kb = KnowledgeBase()
     board_model = BoardModelWithKB(board_data, kb)
@@ -92,7 +93,7 @@ def summary(
     wumpus_count: int = 1,
     pit_count: int = 2,
     gold_count: int = 1,
-    initial_agent_pos: Tuple[int, int] | None = None,
+    initial_agent_pos: DownwardCoord | None = None,
     file: str | None = None,
 ) -> Dict[int, Tuple[str, int]]:
     """Run the simulation multiple times and return the summary of the results.

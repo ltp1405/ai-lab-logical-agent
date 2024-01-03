@@ -11,8 +11,7 @@ class CartesianCoord:
         return DownwardCoord(self.x, height - self.y - 1)
 
     def __iter__(self):
-        yield self.x
-        yield self.y
+        return iter((self.x, self.y))
 
     def __getitem__(self, index):
         if index == 0:
@@ -30,8 +29,7 @@ class DownwardCoord:
         return CartesianCoord(self.x, height - self.y - 1)
 
     def __iter__(self):
-        yield self.x
-        yield self.y
+        return iter((self.x, self.y))
 
     def __getitem__(self, index):
         if index == 0:

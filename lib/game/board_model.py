@@ -1,10 +1,7 @@
-from collections import namedtuple
-from dataclasses import dataclass
 import enum
 from lib.coord import CartesianCoord, DownwardCoord
 from lib.game.board_data import BoardData, TileType, put_enviroment
 from lib.percepts import Percepts
-from test_map_generator import print_map_debug
 
 GOLD_POINTS = 1000
 PIT_POINTS = -10000
@@ -46,7 +43,7 @@ class BoardModel:
         self.width = board_data.width
         self.height = board_data.height
         # x, y
-        self._agent = DownwardCoord(board_data.initial_agent_pos[0], board_data.initial_agent_pos[1]).to_cartesian(self.height)
+        self._agent = board_data.initial_agent_pos.to_cartesian(self.height)
         self.agent_direction = Direction.RIGHT
         self.points = 0
         self.game_over = GameState.PLAYING
