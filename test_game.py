@@ -1,7 +1,7 @@
 import pygame
 from lib.game.board import Board, Direction
 from lib.game.board_data import BoardData, read_board_data
-from lib.game.board_model import Action, BoardModel
+from lib.game.board_model import Action, BoardModel, GameState
 from lib.game.board_with_kb import BoardModelWithKB
 from lib.game.map_generator import generate_map
 from lib.knowledge_base.knowledge_base import KnowledgeBase
@@ -71,7 +71,7 @@ if __name__ == "__main__":
                 elif event.key == pygame.K_r:
                     board_model.act(Action.CLIMB)
         board.update(dt)
-        if board_model.game_over:
+        if board_model.game_over != GameState.PLAYING:
             running = False
         screen.fill((0, 0, 0))
         board.draw(screen)
