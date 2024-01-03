@@ -5,7 +5,7 @@ from lib.game.board_data import BoardData, TileType, put_enviroment
 from lib.percepts import Percepts
 from test_map_generator import print_map_debug
 
-GOLD_POINTS = 100
+GOLD_POINTS = 1000
 PIT_POINTS = -10000
 WUMPUS_POINTS = -10000
 ARROW_POINTS = -100
