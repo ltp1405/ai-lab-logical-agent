@@ -5,8 +5,8 @@ if __name__ == "__main__":
     times = 10
     result = summary(
         times=times,
-        initial_agent_pos=(2, 2),
-        wumpus_count=3,
+        initial_agent_pos=(2, 3),
+        wumpus_count=5,
         pit_count=5,
         gold_count=10,
     )
