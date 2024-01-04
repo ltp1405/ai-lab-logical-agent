@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from rich.table import Table
+from rich import print
 
 from lib.coord import CartesianCoord, DownwardCoord
 
@@ -96,6 +97,7 @@ def put_enviroment(board_data):
                     board_data[y][x - 1].add(TileType.BREEZE)
                 if x < width - 1:
                     board_data[y][x + 1].add(TileType.BREEZE)
+
 
 def print_map_debug(map: list[list[set[TileType]]], initial_agent_position):
     table = Table(show_header=False, show_lines=True)
