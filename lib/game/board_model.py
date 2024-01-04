@@ -36,20 +36,16 @@ class BoardModel:
     def __init__(self, board_data: BoardData):
         self.board_data = board_data
         self.board = board_data.board_data
-        self.revealed = [
-            [False for _ in range(self.board_data.width)]
-            for _ in range(self.board_data.height)
-        ]
         self.width = board_data.width
         self.height = board_data.height
         # x, y
         self._agent = board_data.initial_agent_pos.to_cartesian(self.height)
+        print(self._agent)
         self.agent_direction = Direction.RIGHT
         self.points = 0
         self.game_over = GameState.PLAYING
         self.current_percepts = Percepts()
         self._update_percepts()
-        self.revealed[self._agent.y][self._agent.x] = True
         self.initial_agent_pos = self._agent
 
     def _current_agent_tile_on_board(self) -> set[TileType]:
@@ -86,7 +82,7 @@ class BoardModel:
         ):
             raise Exception(f"Game is over: {self.points} points")
         if action == Action.MOVE:
-            y, x = self._agent.y, self._agent.x
+            x, y = self._agent.x, self._agent.y
             if (
                 self._agent == CartesianCoord(x=0, y=0)
                 and self.agent_direction == Direction.DOWN
@@ -107,7 +103,6 @@ class BoardModel:
                 self._agent = CartesianCoord(x=x, y=y)
                 y = self.board_data.height - 1 - y
                 x = self._agent.x
-                self.revealed[y][x] = True
                 self.points += MOVE_POINTS
                 tiles = self._current_agent_tile_on_board()
                 percepts = Percepts()

@@ -42,7 +42,7 @@ def run(
     if map_path is not None:
         board_data = read_board_data(map_path)
     x, y = board_data.initial_agent_pos
-    print_map_debug(board_data.board_data, (y, x))
+    print_map_debug(board_data.board_data, (x, y))
     # assert False
     screen = pygame.display.set_mode()
     s_width, s_height = screen.get_size()

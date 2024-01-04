@@ -16,14 +16,15 @@ if __name__ == "__main__":
     pygame.init()
     board_data = read_board_data("tests/map2.txt")
     map = generate_map(
-        seed=500,
-        initial_agent_position=DownwardCoord(2, 3),
-        wumpus_count=1,
-        pit_count=2,
-        gold_count=4,
+        seed=123,
+        # initial_agent_position=DownwardCoord(2, 3),
+        map_size=(10, 10),
+        # wumpus_count=1,
+        # pit_count=2,
+        # gold_count=4,
     )
     x, y = map.board_data.initial_agent_pos
-    print_map_debug(map.board_data.board_data, (y, x))
+    print_map_debug(map.board_data.board_data, (x, y))
     board_data = map.board_data
     screen = pygame.display.set_mode()
     s_width, s_height = screen.get_size()

@@ -151,10 +151,7 @@ def generate_map(
         height=len(map),
         width=len(map[0]),
         board_data=map,
-        initial_agent_pos=DownwardCoord(
-            initial_agent_position.x,
-            initial_agent_position.y,
-        ),
+        initial_agent_pos=initial_agent_position,
     )
     return Result(
         board_data,
