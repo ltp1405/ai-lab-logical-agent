@@ -12,7 +12,7 @@ from rich import print
 from rich.table import Table
 from typing import Dict, Tuple
 
-from test_map_generator import print_map_debug
+from lib.game.board_data import print_map_debug
 
 TILE_SIZE = 64
 

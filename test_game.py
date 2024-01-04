@@ -8,7 +8,7 @@ from lib.game.map_generator import generate_map
 from lib.knowledge_base.knowledge_base import KnowledgeBase
 from rich import print
 
-from test_map_generator import print_map_debug
+from lib.game.board_data import print_map_debug
 
 TILE_SIZE = 64
 

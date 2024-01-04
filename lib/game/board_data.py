@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
 
+from rich.table import Table
+
 from lib.coord import CartesianCoord, DownwardCoord
 
 
@@ -94,3 +96,20 @@ def put_enviroment(board_data):
                     board_data[y][x - 1].add(TileType.BREEZE)
                 if x < width - 1:
                     board_data[y][x + 1].add(TileType.BREEZE)
+
+def print_map_debug(map: list[list[set[TileType]]], initial_agent_position):
+    table = Table(show_header=False, show_lines=True)
+    str_map = [[str() for _ in range(len(map[0]))] for _ in range(len(map))]
+    for y in range(len(map)):
+        for x in range(len(map[0])):
+            tile_str = str()
+            tile_str += "W" if TileType.WUMPUS in map[y][x] else " "
+            tile_str += "P" if TileType.PIT in map[y][x] else " "
+            tile_str += "G" if TileType.GOLD in map[y][x] else " "
+            tile_str += "A" if (x, y) == initial_agent_position else " "
+            str_map[y][x] = tile_str
+
+    for y in range(len(map)):
+        table.add_row(*str_map[y])
+    print(table)
+

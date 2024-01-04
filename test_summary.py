@@ -2,7 +2,7 @@ from lib.coord import DownwardCoord
 from lib.game.game import summary
 
 if __name__ == "__main__":
-    times = 1
+    times = 8
     result = summary(
         seed=123,
         times=times,
