@@ -31,6 +31,7 @@ def run(
 ) -> Tuple[str, int, int]:
     pygame.init()
     map = generate_map(
+        map_size=(10, 10),
         seed=seed,
         wumpus_count=wumpus_count,
         pit_count=pit_count,
