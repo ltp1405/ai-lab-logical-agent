@@ -14,11 +14,11 @@ from typing import Dict, Tuple
 
 from lib.game.board_data import print_map_debug
 
-TILE_SIZE = 64
+TILE_SIZE = 48
 
 # When the agent picks the same safe room for 10 times, it will take risk
 # to find way to exit the cave, avoid being stuck in the cave forever
-THRES_HOLD = 10 
+THRES_HOLD = 10
 
 
 def run(
@@ -48,8 +48,8 @@ def run(
     s_width, s_height = screen.get_size()
     middle = s_width // 2, s_height // 2
     board_x, board_y = (
-        middle[0] - (x + 1) * TILE_SIZE,
-        middle[1] - (y + 1) * TILE_SIZE,
+        middle[0] - board_data.width * TILE_SIZE // 2,
+        middle[1] - board_data.height * TILE_SIZE // 2,
     )
     kb = KnowledgeBase()
     board_model = BoardModelWithKB(board_data, kb)

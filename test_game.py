@@ -10,7 +10,7 @@ from rich import print
 
 from lib.game.board_data import print_map_debug
 
-TILE_SIZE = 64
+TILE_SIZE = 48
 
 if __name__ == "__main__":
     pygame.init()
@@ -30,15 +30,15 @@ if __name__ == "__main__":
     s_width, s_height = screen.get_size()
     middle = s_width // 2, s_height // 2
     board_x, board_y = (
-        middle[0] - (x + 1) * TILE_SIZE,
-        middle[1] - (y + 1) * TILE_SIZE,
+        middle[0] - board_data.width * TILE_SIZE // 2,
+        middle[1] - board_data.height * TILE_SIZE // 2,
     )
     kb = KnowledgeBase()
     board_model = BoardModelWithKB(board_data, kb)
     board = Board(board_model, board_x, board_y, TILE_SIZE)
     clock = pygame.time.Clock()
     running = True
-    font = pygame.font.SysFont("Arial", 32)
+    font = pygame.font.SysFont("Arial", 16)
     text = board.model.current_percepts
     while running:
         dt = clock.tick(60) / 1000
