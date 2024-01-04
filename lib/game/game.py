@@ -18,7 +18,7 @@ TILE_SIZE = 48
 
 # When the agent picks the same safe room for 10 times, it will take risk
 # to find way to exit the cave, avoid being stuck in the cave forever
-THRES_HOLD = 10
+THRES_HOLD = 25
 
 
 def run(

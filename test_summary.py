@@ -1,10 +1,10 @@
-from lib.coord import DownwardCoord
+# from lib.coord import DownwardCoord
 from lib.game.game import summary
 
 if __name__ == "__main__":
     times = 10
     result = summary(
-        seed=52356,
+        seed=700,
         times=times,
         # seed=500,
         # file="tests/map6.txt",
