@@ -94,6 +94,11 @@ class KnowledgeBase:
                         self.left = x
                         self.world.set_bound(Direction.LEFT, x)
                 # res.update(set_bound_res)
+        stench_res: Dict[Tuple[int, int], Any]
+        if percept["stench"]:
+            stench_res = self.world.set_item((x, y, "is_stench"), CellValue.TRUE)
+        else:
+            stench_res = self.world.set_item((x, y, "is_stench"), CellValue.FALSE)
         if action == None:
             pass
         elif percept["scream"]:
@@ -105,6 +110,7 @@ class KnowledgeBase:
                     self.world.set_item((x, y - 1, "is_safe"), True)
                     res[(x, y - 1)] = self.world[(x, y - 1)]
                 case Direction.LEFT:
+                    print("set safe", x - 1, y)
                     self.world.set_item((x - 1, y, "is_safe"), True)
                     res[(x - 1, y)] = self.world[(x - 1, y)]
                 case Direction.RIGHT:
@@ -124,11 +130,6 @@ class KnowledgeBase:
                 case Direction.RIGHT:
                     self.world.set_item((x + 1, y, "is_wumpus"), CellValue.FALSE)
                     res[(x + 1, y)] = self.world[(x + 1, y)]
-        stench_res: Dict[Tuple[int, int], Any]
-        if percept["stench"]:
-            stench_res = self.world.set_item((x, y, "is_stench"), CellValue.TRUE)
-        else:
-            stench_res = self.world.set_item((x, y, "is_stench"), CellValue.FALSE)
         res.update(stench_res)
         breeze_res: Dict[Tuple[int, int], Any]
         if percept["breeze"]:
