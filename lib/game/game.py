@@ -48,8 +48,8 @@ def run(
     s_width, s_height = screen.get_size()
     middle = s_width // 2, s_height // 2
     board_x, board_y = (
-        middle[0] - (board_data.initial_agent_pos.x + 1) * TILE_SIZE,
-        middle[1] - (board_data.initial_agent_pos.y + 1) * TILE_SIZE,
+        middle[0] - (x + 1) * TILE_SIZE,
+        middle[1] - (y + 1) * TILE_SIZE,
     )
     kb = KnowledgeBase()
     board_model = BoardModelWithKB(board_data, kb)
