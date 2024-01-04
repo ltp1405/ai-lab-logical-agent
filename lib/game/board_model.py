@@ -173,6 +173,8 @@ class BoardModel:
         self.points += ARROW_POINTS
         match self.agent_direction:
             case Direction.UP:
+                if self._agent.y >= self.board_data.height - 1:
+                    return False
                 y = self._agent.y + 1
                 y = self.board_data.height - 1 - y
                 if TileType.WUMPUS in self.board_data.board_data[y][self._agent.x]:
@@ -182,6 +184,8 @@ class BoardModel:
                     self._remove_stench_around(self._agent.x, y)
                     return True
             case Direction.DOWN:
+                if self._agent.y <= 0:
+                    return False
                 y = self._agent.y - 1
                 y = self.board_data.height - 1 - y
                 if TileType.WUMPUS in self.board_data.board_data[y][self._agent.x]:
@@ -191,6 +195,8 @@ class BoardModel:
                     self._remove_stench_around(self._agent.x, y)
                     return True
             case Direction.LEFT:
+                if self._agent.x <= 0:
+                    return False
                 y = self.board_data.height - 1 - self._agent.y
                 x = self._agent.x - 1
                 if TileType.WUMPUS in self.board_data.board_data[y][x]:
@@ -198,6 +204,8 @@ class BoardModel:
                     self._remove_stench_around(x, y)
                     return True
             case Direction.RIGHT:
+                if self._agent.x >= self.board_data.width - 1:
+                    return False
                 y = self.board_data.height - 1 - self._agent.y
                 x = self._agent.x + 1
                 if TileType.WUMPUS in self.board_data.board_data[y][x]:
