@@ -81,18 +81,12 @@ class WorldView:
                                 ]
                 if self.cells[(x, y)].is_stench == CellValue.FALSE:
                     for i in range(4):
-                        if (
-                            self.cells[(x + self.kx[i], y + self.ky[i])].is_wumpus
-                            == CellValue.UNKNOWN
-                            or self.cells[(x + self.kx[i], y + self.ky[i])].is_wumpus
-                            == CellValue.MAYBE
-                        ):
-                            self.cells[
-                                (x + self.kx[i], y + self.ky[i])
-                            ].is_wumpus = CellValue.FALSE
-                            res[(x + self.kx[i], y + self.ky[i])] = self.cells[
-                                (x + self.kx[i], y + self.ky[i])
-                            ]
+                        self.cells[
+                            (x + self.kx[i], y + self.ky[i])
+                        ].is_wumpus = CellValue.FALSE
+                        res[(x + self.kx[i], y + self.ky[i])] = self.cells[
+                            (x + self.kx[i], y + self.ky[i])
+                        ]
                 if self.cells[(x, y)].is_breeze == CellValue.TRUE:
                     not_pit_cnt = 0
                     for i in range(4):
@@ -125,18 +119,12 @@ class WorldView:
                                 ]
                 if self.cells[(x, y)].is_breeze == CellValue.FALSE:
                     for i in range(4):
-                        if (
-                            self.cells[(x + self.kx[i], y + self.ky[i])].is_pit
-                            == CellValue.UNKNOWN
-                            or self.cells[(x + self.kx[i], y + self.ky[i])].is_pit
-                            == CellValue.MAYBE
-                        ):
-                            self.cells[
-                                (x + self.kx[i], y + self.ky[i])
-                            ].is_pit = CellValue.FALSE
-                            res[(x + self.kx[i], y + self.ky[i])] = self.cells[
-                                (x + self.kx[i], y + self.ky[i])
-                            ]
+                        self.cells[
+                            (x + self.kx[i], y + self.ky[i])
+                        ].is_pit = CellValue.FALSE
+                        res[(x + self.kx[i], y + self.ky[i])] = self.cells[
+                            (x + self.kx[i], y + self.ky[i])
+                        ]
         return res
 
     def set_item(
