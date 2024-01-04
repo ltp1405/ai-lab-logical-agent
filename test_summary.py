@@ -2,17 +2,13 @@ from lib.game.game import summary
 from rich import print
 
 if __name__ == "__main__":
-    times = 10
+    times = 100
     result = summary(
         times=times,
-        initial_agent_pos=(2, 3),
-        wumpus_count=5,
-        pit_count=5,
-        gold_count=10,
+        # seed=500,
+        file="tests/map6.txt",
+        # initial_agent_pos=(2, 3),
+        # wumpus_count=0,
+        # pit_count=5,
+        # gold_count=4,
     )
-    winning_percentage = 0.0
-    for r in result:
-        if result[r][0] == "WON":
-            winning_percentage += 1
-    print(f"Winning percentage: {winning_percentage / times * 100}%")
-    print(result)

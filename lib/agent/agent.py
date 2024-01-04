@@ -139,12 +139,20 @@ class Agent:
                 res.remove((left, bottom - 1))
         return res
 
-    def random_select_room(self, rooms: List[Tuple[int, int]]) -> Tuple[int, int]:
+    def random_select_room(
+        self,
+        rooms: List[Tuple[int, int]],
+        take_risk: bool = False,
+    ) -> Tuple[int, int]:
         if len(rooms) == 1:
             return rooms[0]
         if self.state == AgentState.TRY_TO_EXIT:
             # Prioritize the exit room: going DOWN, LEFT
-            filtered_rooms = [room for room in rooms if self.identify_direction(room) in (Direction.DOWN, Direction.LEFT)]
+            filtered_rooms = [
+                room
+                for room in rooms
+                if self.identify_direction(room) in (Direction.DOWN, Direction.LEFT)
+            ]
             if len(filtered_rooms) > 0:
                 return random.choice(filtered_rooms)
         room = random.choice(rooms)

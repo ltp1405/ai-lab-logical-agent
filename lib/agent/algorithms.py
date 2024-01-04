@@ -15,6 +15,7 @@ from lib.percepts import Percepts
 def simulation(
     agent: Agent,
     visited_rooms: Set[Tuple[int, int]],
+    take_risk: bool,
 ) -> Tuple[Percepts, Set[Tuple[int, int]]]:
     print("=====================================")
     # Step 1
@@ -41,34 +42,34 @@ def simulation(
     if (
         set(all_safe_rooms).issubset(c_visited_rooms)
         and agent.state != AgentState.TRY_TO_EXIT
-        and percepts["stench"] is None 
+        and percepts["stench"] is None
     ):
         print("All safe rooms are visited")
         print(f"Visited rooms: {c_visited_rooms}")
         return _restart_to_exit(agent, c_visited_rooms)
-    else:
-        room = _select_room(
-            agent,
-            visited_rooms,
-            safe_rooms,
-        )
-        if room is None:
-            result = _agent_make_desicion(
-                agent,
-                c_visited_rooms=c_visited_rooms,
-            )
-            percepts, new_visited_rooms = result
-            c_visited_rooms = new_visited_rooms
+    if (room := _select_room(
+        agent,
+        visited_rooms,
+        safe_rooms,
+    )) is not None:
+        percepts = agent.take_action(Action.MOVE, room)
+        if percepts["glitter"]:
+            print(f"FIND GOLD at room: {room}")
+        if not percepts["bump"]:
+            c_visited_rooms.add(room)
+            print(f"Move to room: {room}")
         else:
-            percepts = agent.take_action(Action.MOVE, room)
-            if percepts["glitter"]:
-                print(f"FIND GOLD at room: {room}")
-            if not percepts["bump"]:
-                c_visited_rooms.add(room)
-                print(f"Move to room: {room}")
-            else:
-                agent.backtrack()  # Remove the wall from the stack
-                print(f"Bumped into the wall at {room}")
+            agent.backtrack()  # Remove the wall from the stack
+            print(f"Bumped into the wall at {room}")
+    else:
+        result = _agent_make_desicion(
+            agent,
+            c_visited_rooms=c_visited_rooms,
+            take_risk=take_risk,
+        )
+        percepts, new_visited_rooms = result
+        c_visited_rooms = new_visited_rooms
+
     return (percepts, c_visited_rooms)
 
 
@@ -93,7 +94,9 @@ def _select_room(
     not_visited_rooms = [room for room in safe_rooms if room not in visited_rooms]
     if not not_visited_rooms:
         return None
-    print(f"There are {len(not_visited_rooms)} rooms that are not visited yet: {not_visited_rooms}")
+    print(
+        f"There are {len(not_visited_rooms)} rooms that are not visited yet: {not_visited_rooms}"
+    )
     room = agent.random_select_room(not_visited_rooms)
     return room
 
@@ -101,6 +104,7 @@ def _select_room(
 def _agent_make_desicion(
     agent: Agent,
     c_visited_rooms: Set[Tuple[int, int]],
+    take_risk: bool,
 ) -> Tuple[Percepts, Set[Tuple[int, int]]]:
     """Agent makes a decision sequentially:
     1. Looking for the wumpus and shoot the arrow
@@ -121,7 +125,7 @@ def _agent_make_desicion(
         )
     ) is not None:
         return (percepts, c_visited_rooms)
-    if (percepts := _move_back_to_previous_room(agent, c_visited_rooms)) is not None:
+    if not take_risk and (percepts := _move_back_to_previous_room(agent, c_visited_rooms)) is not None:
         return percepts
     if (
         agent.state == AgentState.TRY_TO_EXIT
@@ -172,10 +176,10 @@ def _find_wumpus_and_shoot_arrow(
         Percepts | None: Percepts of the function call agent.take_action if there is a room
     """
     rooms: List[Tuple[int, int]] = agent.wumpus_rooms(target=CellValue.TRUE)
-    pit_rooms: List[Tuple[int, int]] = agent.pit_rooms()
+    # pit_rooms: List[Tuple[int, int]] = agent.pit_rooms()
     if len(rooms) == 0:
         rooms = agent.wumpus_rooms(target=CellValue.MAYBE)
-    rooms = [room for room in rooms if room not in pit_rooms]
+    # rooms = [room for room in rooms if room not in pit_rooms]
     if len(rooms) == 0:
         return None
     choice = agent.random_select_room(rooms)
@@ -217,4 +221,3 @@ def _restart_to_exit(
     agent.stack.append(current_room)
     agent.state = AgentState.TRY_TO_EXIT
     return (agent.board.current_percepts, {current_room})
-
