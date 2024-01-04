@@ -22,7 +22,7 @@ class Board:
             [False for _ in range(self.model.width)] for _ in range(self.model.height)
         ]
         # y, x
-        self.font = pygame.font.SysFont("Mono", 20)
+        self.font = pygame.font.SysFont("Mono", self.tile_size // 3)
         self.padding = 1
 
     def draw(self, surface: pygame.Surface):
