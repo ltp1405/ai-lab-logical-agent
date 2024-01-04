@@ -54,8 +54,13 @@ def _put_tiles(
             while True:
                 x = random.randint(0, len(map[0]) - 1)
                 y = random.randint(0, len(map) - 1)
-                if empty(x, y) and (
-                    x != initial_agent_position[0] and y != initial_agent_position[1]
+                if (
+                    empty(x, y)
+                    and (
+                        x != initial_agent_position[0]
+                        and y != initial_agent_position[1]
+                    )
+                    and (x != 0 and y != len(map) - 1)
                 ):
                     map[y][x].add(TileType.WUMPUS)
                     current_wumpus_count += 1
@@ -64,8 +69,13 @@ def _put_tiles(
             while True:
                 x = random.randint(0, len(map[0]) - 1)
                 y = random.randint(0, len(map) - 1)
-                if empty(x, y) and (
-                    x != initial_agent_position[0] and y != initial_agent_position[1]
+                if (
+                    empty(x, y)
+                    and (
+                        x != initial_agent_position[0]
+                        and y != initial_agent_position[1]
+                    )
+                    and (x != 0 and y != len(map) - 1)
                 ):
                     map[y][x].add(TileType.PIT)
                     if (
