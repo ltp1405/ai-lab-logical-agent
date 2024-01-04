@@ -1,9 +1,7 @@
-from collections import namedtuple
-from dataclasses import dataclass
 import enum
+from lib.coord import CartesianCoord, DownwardCoord
 from lib.game.board_data import BoardData, TileType, put_enviroment
 from lib.percepts import Percepts
-from test_map_generator import print_map_debug
 
 GOLD_POINTS = 1000
 PIT_POINTS = -10000
@@ -34,12 +32,6 @@ class GameState(enum.Enum):
     LOST_UNKNOWN = 5
 
 
-@dataclass
-class Position:
-    x: int
-    y: int
-
-
 class BoardModel:
     def __init__(self, board_data: BoardData):
         self.board_data = board_data
@@ -51,10 +43,7 @@ class BoardModel:
         self.width = board_data.width
         self.height = board_data.height
         # x, y
-        self._agent = Position(
-            x=self.board_data.initial_agent_pos[1],
-            y=self.board_data.height - 1 - self.board_data.initial_agent_pos[0],
-        )
+        self._agent = board_data.initial_agent_pos.to_cartesian(self.height)
         self.agent_direction = Direction.RIGHT
         self.points = 0
         self.game_over = GameState.PLAYING
@@ -64,8 +53,7 @@ class BoardModel:
         self.initial_agent_pos = self._agent
 
     def _current_agent_tile_on_board(self) -> set[TileType]:
-        y, x = self._agent.y, self._agent.x
-        y = self.board_data.height - 1 - y
+        x, y = self._agent.to_downward(self.height)
         return self.board_data.board_data[y][x]
 
     def change_agent_direction(self, direction: Direction):
@@ -100,7 +88,7 @@ class BoardModel:
         if action == Action.MOVE:
             y, x = self._agent.y, self._agent.x
             if (
-                self._agent == Position(x=0, y=0)
+                self._agent == CartesianCoord(x=0, y=0)
                 and self.agent_direction == Direction.DOWN
             ):
                 self.points += CLIMB_OUT_POINTS
@@ -116,7 +104,7 @@ class BoardModel:
             elif self.agent_direction == Direction.RIGHT:
                 x += 1
             if 0 <= y < self.board_data.height and 0 <= x < self.board_data.width:
-                self._agent = Position(x=x, y=y)
+                self._agent = CartesianCoord(x=x, y=y)
                 y = self.board_data.height - 1 - y
                 x = self._agent.x
                 self.revealed[y][x] = True
@@ -160,7 +148,7 @@ class BoardModel:
             return self.current_percepts
 
         elif action == Action.CLIMB:
-            if self._agent == Position(x=0, y=0):
+            if self._agent == CartesianCoord(x=0, y=0):
                 self.points += CLIMB_OUT_POINTS
                 self.game_over = GameState.WON
                 print(f"Points: {self.points}")
@@ -174,20 +162,17 @@ class BoardModel:
                     self.board_data.board_data[j][i].remove(TileType.STENCH)
         put_enviroment(self.board_data.board_data)
 
-    def model_agent_position(self) -> Position:
+    def model_agent_position(self) -> CartesianCoord:
         """
         Row-first top-down position of the agent
         """
         return self._agent
 
-    def tl_agent_position(self) -> Position:
+    def tl_agent_position(self) -> DownwardCoord:
         """
         Position of the agent relative to the top-left corner
         """
-        return Position(
-            x=self._agent.x,
-            y=self.board_data.height - 1 - self._agent.y,
-        )
+        return self._agent.to_downward(self.board_data.height)
 
     def _shoot(self) -> bool:
         self.points += ARROW_POINTS

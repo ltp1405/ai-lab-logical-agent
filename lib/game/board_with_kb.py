@@ -1,6 +1,7 @@
 from typing import Dict, Tuple
+from lib.coord import CartesianCoord
 from lib.game.board_data import BoardData
-from lib.game.board_model import BoardModel, Direction, Position
+from lib.game.board_model import BoardModel, Direction
 from lib.knowledge_base.cell import Cell
 from lib.knowledge_base.knowledge_base import KnowledgeBase
 from rich import print
@@ -35,7 +36,7 @@ class BoardModelWithKB(BoardModel):
         """
         Agent position relative to the initial position
         """
-        return Position(
+        return CartesianCoord(
             x=self._agent.x - self.initial_agent_pos.x,
             y=self._agent.y - self.initial_agent_pos.y,
         )
