@@ -61,7 +61,7 @@ def read_board_data(filename):
                     elif tile == "G":
                         board_data[y][x].add(TileType.GOLD)
                     elif tile == "A":
-                        agent_pos = (y, x)
+                        agent_pos = x, y
 
         if agent_pos is None:
             raise ValueError("No agent position found in map file")

@@ -45,7 +45,7 @@ def run(
     x, y = board_data.initial_agent_pos
     print_map_debug(board_data.board_data, (x, y))
     # assert False
-    screen = pygame.display.set_mode()
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     s_width, s_height = screen.get_size()
     middle = s_width // 2, s_height // 2
     board_x, board_y = (
@@ -166,7 +166,7 @@ def _print_summary_table(
 def summary(
     times: int = 10,
     seed: int = 500,
-    map_size: Tuple[int, int] = (10, 10),
+    map_size: Tuple[int, int] | None = None,
     wumpus_count: int | None = None,
     pit_count: int | None = None,
     gold_count: int | None = None,

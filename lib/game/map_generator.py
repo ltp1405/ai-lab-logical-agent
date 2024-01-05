@@ -126,10 +126,10 @@ def generate_map(
         wumpus_count = random.randint(1, int(map_size[0] * map_size[1] / 5))
 
     if pit_count is None:
-        pit_count = random.randint(1, int(map_size[0] * map_size[1] / 5))
+        pit_count = random.randint(0, int(map_size[0] * map_size[1] / 5))
 
     if gold_count is None:
-        gold_count = random.randint(1, int(map_size[0] * map_size[1] / 5))
+        gold_count = random.randint(0, int(map_size[0] * map_size[1] / 5))
 
     if initial_agent_position is None:
         initial_agent_position = DownwardCoord(
