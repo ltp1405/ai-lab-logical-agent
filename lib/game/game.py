@@ -18,11 +18,12 @@ TILE_SIZE = 48
 
 # When the agent picks the same safe room for 10 times, it will take risk
 # to find way to exit the cave, avoid being stuck in the cave forever
-THRES_HOLD = 25
+THRES_HOLD = 28
 
 
 def run(
     map_path: str | None = None,
+    map_size: Tuple[int, int] | None = None,
     seed: int = 500,
     wumpus_count: int | None = None,
     pit_count: int | None = None,
@@ -31,7 +32,7 @@ def run(
 ) -> Tuple[str, int, int]:
     pygame.init()
     map = generate_map(
-        map_size=(10, 10),
+        map_size=map_size,
         seed=seed,
         wumpus_count=wumpus_count,
         pit_count=pit_count,
@@ -63,6 +64,7 @@ def run(
     running = True
     font = pygame.font.SysFont("Arial", 32)
     text = board.model.current_percepts
+    # assert False
     try:
         while running:
             dt = clock.tick(60) / 1000
@@ -129,7 +131,7 @@ def _print_summary_table(
     max_gold = 0
     lose_by_pit_count = 0
     points_sum = 0
-    max_points = 0
+    max_points = float("-inf")
     min_points = float("inf")
     for i in summary:
         if summary[i][0] == "WON":
@@ -164,6 +166,7 @@ def _print_summary_table(
 def summary(
     times: int = 10,
     seed: int = 500,
+    map_size: Tuple[int, int] = (10, 10),
     wumpus_count: int | None = None,
     pit_count: int | None = None,
     gold_count: int | None = None,
@@ -183,6 +186,7 @@ def summary(
     for i in range(times):
         game_result = run(
             seed=seed,
+            map_size=map_size,
             map_path=file,
             wumpus_count=wumpus_count,
             pit_count=pit_count,
