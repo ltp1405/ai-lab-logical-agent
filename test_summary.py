@@ -53,7 +53,7 @@ if __name__ == "__main__":
     #     seed=53,
     #     times=times,
     #     map_size=(10, 10),
-    #     wumpus_count=0,
+    #     wumpus_count=1,
     #     pit_count=10,
     #     gold_count=8,
     # )
@@ -73,3 +73,28 @@ if __name__ == "__main__":
     #     file="tests/map1.txt",
     #     times=times,
     # )
+    # # Map 2
+    # result = summary(
+    #     file="tests/map5.txt",
+    #     times=times,
+    # )
+    # # Map 3
+    # result = summary(
+    #     file="tests/map7.txt",
+    # )
+    # # Map 4
+    # result = summary(
+    #     file="tests/map8.txt",
+    #     times=times,
+    # )
+    # # Map 5
+    # result = summary(
+    #     file="tests/map9.txt",
+    #     times=times,
+    # )
+    # # Map 6
+    # result = summary(
+    #     file="tests/map6.txt",
+    #     times=times,
+    # )
+    
